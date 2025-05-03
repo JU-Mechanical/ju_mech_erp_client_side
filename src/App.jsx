@@ -90,9 +90,9 @@ function App() {
     <ThemeProvider theme={theme}>
       <Router>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          {/* <Route path="/" element={<HomePage />} /> */}
           <Route
-            path="/auth"
+            path="/"
             element={<AuthPage fetchUserProfile={fetchUserProfile} />}
           />
           <Route
