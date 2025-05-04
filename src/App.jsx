@@ -13,6 +13,8 @@ import AuthPage from "./pages/AuthPage";
 import UserProfile from "./pages/UserProfile";
 import DashboardPage from "./pages/Dashboard";
 import AdminPortal from "./pages/AdminPortal";
+import NoticePage from "./pages/NoticePage";
+import FacultyPage from "./pages/FacultyPage";
 import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
 import { use, useEffect } from "react";
@@ -105,6 +107,8 @@ function App() {
             element={user ? <DashboardPage /> : <AuthPage />}
           />
           <Route path="/admin" element={<AdminPortal />} />
+          <Route path="/notices" element={<NoticePage />} />
+          <Route path="/faculty" element={<FacultyPage />} />
         </Routes>
       </Router>
     </ThemeProvider>

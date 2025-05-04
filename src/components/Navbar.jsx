@@ -130,7 +130,8 @@ export default function Navbar() {
           </Button>
           <Button
             color="inherit"
-            onClick={handleInProgress}
+            component={Link}
+            to="/notices"
             sx={{
               fontSize: { xs: "0.9rem", md: "1.1rem" }, // Slightly larger font size
               fontWeight: "bold", // Bold text for better readability
@@ -145,7 +146,8 @@ export default function Navbar() {
           </Button>
           <Button
             color="inherit"
-            onClick={handleInProgress}
+            component={Link}
+            to="/faculty"
             sx={{
               fontSize: { xs: "0.9rem", md: "1.1rem" }, // Slightly larger font size
               fontWeight: "bold", // Bold text for better readability
@@ -211,10 +213,10 @@ export default function Navbar() {
               <ListItem button component={Link} to="/">
                 <ListItemText primary="Home" />
               </ListItem>
-              <ListItem button onClick={handleInProgress}>
+              <ListItem button component={Link} to="/notices">
                 <ListItemText primary="Notices" />
               </ListItem>
-              <ListItem button onClick={handleInProgress}>
+              <ListItem button component={Link} to="/faculty">
                 <ListItemText primary="Faculty" />
               </ListItem>
               <ListItem button onClick={handleInProgress}>
