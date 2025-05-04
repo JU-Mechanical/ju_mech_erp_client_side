@@ -11,6 +11,7 @@ import {
   CardMedia,
   Avatar,
 } from '@mui/material';
+import Navbar from '../components/Navbar';
 
 const FacultyPage = () => {
   const [faculty, setFaculty] = useState([]);
@@ -58,16 +59,14 @@ const FacultyPage = () => {
 
   return (
     <Box>
+      <Navbar />
       {/* Maroon Header Strip */}
       <Box 
         sx={{ 
           width: '100%', 
           bgcolor: '#b70924', 
-          py: 2, 
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          zIndex: 1,
+          py: 2,
+          mt: 8,
           boxShadow: 3
         }}
       >
@@ -79,7 +78,7 @@ const FacultyPage = () => {
       </Box>
 
       {/* Main Content */}
-      <Container maxWidth="lg" sx={{ py: 4, mt: 12 }}>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} md={6}>
             <TextField
