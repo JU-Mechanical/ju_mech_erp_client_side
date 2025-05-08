@@ -52,13 +52,14 @@ const AuthPage = ({ fetchUserProfile }) => {
         }
       );
       const returneddata = await response.json();
+      
       if (response.ok) {
         document.cookie = `token=${returneddata.token}; path=/; max-age=86400; secure; SameSite=Strict`;
         dispatch(
           setLogin({ user: returneddata.user, token: returneddata.token })
         );
       }
-      navigate("/");
+      navigate(`/profile/:${returneddata.user.name}`);
       fetchUserProfile(returneddata.token); // Fetch user profile after login/signup
     } catch (error) {
       console.error("Error during authentication:", error);
