@@ -53,7 +53,7 @@ export default function AdminPortal() {
           case "AdminDetails":
             return <AdminDetails admin={admin} />;
           case "ManageProfiles":
-            return   <UserList users={students} />
+            return   <UserList users={[mockData]} />
           case "PendingRequests":
             return <Typography variant="h5">Pending Requests Component</Typography>;
           case "Settings":
