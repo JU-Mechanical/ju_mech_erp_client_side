@@ -130,60 +130,62 @@ export default function Navbar() {
           </Button>
           <Button
             color="inherit"
-            onClick={handleInProgress}
+            component={Link}
+            to="/notices"
             sx={{
-              fontSize: { xs: "0.9rem", md: "1.1rem" }, // Slightly larger font size
-              fontWeight: "bold", // Bold text for better readability
+              color: "white",
+              fontSize: "1rem",
+              fontWeight: "bold",
               "&:hover": {
-                textDecoration: "underline",
-                color: "#ffcccb", // Stylish hover color
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
               },
-              transition: "color 0.3s ease", // Smooth color transition
+              transition: "all 0.3s ease",
             }}
           >
             Notices
           </Button>
           <Button
             color="inherit"
-            onClick={handleInProgress}
+            component={Link}
+            to="/faculty"
             sx={{
-              fontSize: { xs: "0.9rem", md: "1.1rem" }, // Slightly larger font size
-              fontWeight: "bold", // Bold text for better readability
+              color: "white",
+              fontSize: "1rem",
+              fontWeight: "bold",
               "&:hover": {
-                textDecoration: "underline",
-                color: "#ffcccb", // Stylish hover color
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
               },
-              transition: "color 0.3s ease", // Smooth color transition
+              transition: "all 0.3s ease",
             }}
           >
             Faculty
           </Button>
           <Button
-            color="inherit"
-            onClick={handleInProgress}
+            component={Link}
+            to="/events"
             sx={{
-              fontSize: { xs: "0.9rem", md: "1.1rem" }, // Slightly larger font size
-              fontWeight: "bold", // Bold text for better readability
+              color: "white",
+              fontSize: "1rem",
+              fontWeight: "bold",
               "&:hover": {
-                textDecoration: "underline",
-                color: "#ffcccb", // Stylish hover color
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
               },
-              transition: "color 0.3s ease", // Smooth color transition
+              transition: "all 0.3s ease",
             }}
           >
             Events
           </Button>
           <Button
-            color="inherit"
-            onClick={handleInProgress}
+            component={Link}
+            to="/routines"
             sx={{
-              fontSize: { xs: "0.9rem", md: "1.1rem" }, // Slightly larger font size
-              fontWeight: "bold", // Bold text for better readability
+              color: "white",
+              fontSize: "1rem",
+              fontWeight: "bold",
               "&:hover": {
-                textDecoration: "underline",
-                color: "#ffcccb", // Stylish hover color
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
               },
-              transition: "color 0.3s ease", // Smooth color transition
+              transition: "all 0.3s ease",
             }}
           >
             Routines
@@ -211,10 +213,10 @@ export default function Navbar() {
               <ListItem button component={Link} to="/">
                 <ListItemText primary="Home" />
               </ListItem>
-              <ListItem button onClick={handleInProgress}>
+              <ListItem button component={Link} to="/notices">
                 <ListItemText primary="Notices" />
               </ListItem>
-              <ListItem button onClick={handleInProgress}>
+              <ListItem button component={Link} to="/faculty">
                 <ListItemText primary="Faculty" />
               </ListItem>
               <ListItem button onClick={handleInProgress}>
