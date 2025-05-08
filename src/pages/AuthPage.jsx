@@ -7,6 +7,7 @@ import {
   Paper,
   Divider,
   useMediaQuery,
+  Snackbar,
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresence
 import GoogleIcon from "@mui/icons-material/Google";
@@ -15,6 +16,7 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "../state";
 import { useNavigate } from "react-router-dom";
 import bg from "../assets/user_login_bg.jpeg";
+import AlertNotification from "../components/Alert";
 
 const PRIMARY_COLOR = "#b70924";
 const WHITE = "#ffffff";
@@ -28,6 +30,7 @@ const AuthPage = ({ fetchUserProfile }) => {
     rollNumber: "",
     password: "",
   });
+  const [alert, setAlert] = useState({show: false, type: "", title:"", message: ""});
   const isMobile = useMediaQuery("(max-width:600px)");
 
   const dispatch = useDispatch();
@@ -43,8 +46,8 @@ const AuthPage = ({ fetchUserProfile }) => {
     try {
       const response = await fetch(
         isLogin
-          ? `https://ju-mech-erp-server-side-org.onrender.com/users/login`
-          : `https://ju-mech-erp-server-side-org.onrender.com/users/signup`,
+          ? `http://localhost:5000/users/login`
+          : `http://localhost:5000/users/signup`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -52,16 +55,41 @@ const AuthPage = ({ fetchUserProfile }) => {
         }
       );
       const returneddata = await response.json();
-      if (response.ok) {
+      if (response.status == 200) {
+        setAlert({
+          show: true,
+          type: "success",
+          message: returneddata.message || "Login Successful!"
+        })
         document.cookie = `token=${returneddata.token}; path=/; max-age=86400; secure; SameSite=Strict`;
         dispatch(
           setLogin({ user: returneddata.user, token: returneddata.token })
         );
+        fetchUserProfile(returneddata.token); 
+        navigate("/");
+        return 
+      } else if(response.status == 400) {
+        setAlert({
+          show: true,
+          type: "warning",
+          message: returneddata.message || "Authentication failed. Please try again."
+        })
+        return
+      } else if (response.status == 500) {
+        setAlert({
+          show: true,
+          type: "error",
+          message: returneddata.message || "An unexpected error occurred. Please try again later."
+        })
+        return
       }
-      navigate("/");
-      fetchUserProfile(returneddata.token); // Fetch user profile after login/signup
+      // Fetch user profile after login/signup
     } catch (error) {
-      console.error("Error during authentication:", error);
+      setAlert({
+        show: true,
+        type: "error",
+        message: "An unexpected error occured. Please try again later."
+      })
     }
   };
 
@@ -94,6 +122,21 @@ const AuthPage = ({ fetchUserProfile }) => {
           overflowY: "auto",
         }}
       >
+        {/* Snackbar for Alert */}
+        {/* <Snackbar
+          open={alert.show}
+          autoHideDuration={5000} // Alert will disappear after 5 seconds
+          onClose={() => setAlert({ ...alert, show: false })}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }} // Position: Top-Right
+        >
+          <AlertNotification
+            type={alert.type}
+            message={alert.message}
+            title={alert.title}
+            onClose={() => setAlert({ ...alert, show: false })}
+          />
+        </Snackbar> */}
+
         <AnimatePresence mode="wait">
           <motion.div
             key={isLogin ? "login" : "signup"} // Unique key for each form

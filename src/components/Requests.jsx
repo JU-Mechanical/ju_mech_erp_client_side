@@ -21,7 +21,7 @@ const Requests = () => {
     const getreqs=async()=>{
       const data={user_id:user._id};
       console.log(data)
-        const response=await fetch('https://ju-mech-erp-server-side-org.onrender.com/users/getreqs',{
+        const response=await fetch('http://localhost:5000/users/getreqs',{
           method:"POST",
           headers:{"Content-Type":"application/json"},
           body:JSON.stringify(data)
@@ -42,7 +42,7 @@ const Requests = () => {
   const handleSubmit = async(e) => {
     e.preventDefault();
     try {
-      const response=await fetch('https://ju-mech-erp-server-side-org.onrender.com/users/createreq',{
+      const response=await fetch('http://localhost:5000/users/createreq',{
         method:"POST",
         headers:{"Content-Type":"application/json"},
           body:JSON.stringify(formData)

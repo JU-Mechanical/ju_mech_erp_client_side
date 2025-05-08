@@ -110,7 +110,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
         institute: "",
         sdgConnection: false,
         outcome: "",
-        projects: null,
+        certificate: null,
       },
     ],
     publications: {
@@ -143,7 +143,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
         },
       ],
     },
-    courses: user?.acedamicInfo?.publications?.courses || [
+    courses: user?.acedamicInfo?.courses || [
       {
         name: "",
         duration: "",
@@ -152,13 +152,13 @@ export default function MultiStepForm({ fetchUserProfile }) {
         platform: "",
         instituteName: "",
         facultyName: "",
-        curriculumPart: "",
-        creditTransfer: "",
+        curriculumPart: false, // Initialize as Boolean
+        creditTransfer: false, // Initialize as Boolean
         gradeCard: "",
         certificate: null,
       },
     ],
-    trainings: user?.acedamicInfo?.publications?.trainings || [
+    trainings: user?.acedamicInfo?.trainings || [
       {
         place: "",
         duration: 0,
@@ -168,18 +168,18 @@ export default function MultiStepForm({ fetchUserProfile }) {
         certificate: null,
       },
     ],
-    interns: user?.acedamicInfo?.publications?.interns || [
+    interns: user?.acedamicInfo?.interns || [
       {
         place: "",
         duration: "",
         mode: "",
         noCredits: "",
-        platfom: "",
+        platform: "",
         organizedBy: "",
         certificate: null,
       },
     ],
-    remedial: user?.acedamicInfo?.publications?.remedial || [
+    remedial: user?.acedamicInfo?.remedial || [
       {
         num: 0,
         name: "",
@@ -378,11 +378,12 @@ export default function MultiStepForm({ fetchUserProfile }) {
 
   //& function to handle submit of the form data to the server
   const handleFormSubmit = async () => {
+    console.log(acadbackformData)
     const allFormData = {
       personalInfo: personalformData,
       enrollmentDetails: enrollformData,
-      acedamicBackground: acadbackformData,
-      acedamicInfo: acedamicformData,
+      academicBackground: acadbackformData,
+      academicInfo: acedamicformData,
       careerProgression: {
         placement: placementformData.placement,
         exams: placementformData.competitiveExam,
@@ -390,15 +391,20 @@ export default function MultiStepForm({ fetchUserProfile }) {
         startup: placementformData.startup,
       },
       curricularInfo: curricularformData,
-      miscellenous: miscformData,
+      miscellenous: {
+        lor: miscformData.lor,
+        keyLearnings: miscformData.keyLearnings,
+        sop: miscformData.sop,
+        vision: miscformData.vision,
+      },
     };
 
-    console.log(placementformData);
+    console.log(allFormData);
 
     //for submitting form data to the server
     try {
       const response = await fetch(
-        "https://ju-mech-erp-server-side-org.onrender.com/users/details-submit",
+        "http://localhost:5000/users/details-submit",
         {
           method: "POST",
           headers: {
