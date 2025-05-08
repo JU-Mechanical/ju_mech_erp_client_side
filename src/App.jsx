@@ -69,7 +69,7 @@ function App() {
   const fetchUserProfile = async (token) => {
     try {
       const response = await fetch(
-        "https://ju-mech-erp-server-side-org.onrender.com/users/creds-primary",
+        "http://localhost:5000/users/creds-primary",
         {
           method: "GET",
           headers: {
@@ -94,9 +94,9 @@ function App() {
     <ThemeProvider theme={theme}>
       <Router>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          {/* <Route path="/" element={<HomePage />} /> */}
           <Route
-            path="/auth"
+            path="/"
             element={<AuthPage fetchUserProfile={fetchUserProfile} />}
           />
           <Route

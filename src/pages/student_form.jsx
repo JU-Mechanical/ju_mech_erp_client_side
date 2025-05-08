@@ -398,7 +398,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
     //for submitting form data to the server
     try {
       const response = await fetch(
-        "https://ju-mech-erp-server-side-org.onrender.com/users/details-submit",
+        "http://localhost:5000/users/details-submit",
         {
           method: "POST",
           headers: {
