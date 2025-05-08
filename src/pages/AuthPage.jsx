@@ -55,12 +55,17 @@ const AuthPage = ({ fetchUserProfile }) => {
         }
       );
       const returneddata = await response.json();
+<<<<<<< HEAD
       if (response.status == 200) {
         setAlert({
           show: true,
           type: "success",
           message: returneddata.message || "Login Successful!"
         })
+=======
+      
+      if (response.ok) {
+>>>>>>> refs/remotes/origin/main
         document.cookie = `token=${returneddata.token}; path=/; max-age=86400; secure; SameSite=Strict`;
         dispatch(
           setLogin({ user: returneddata.user, token: returneddata.token })
@@ -83,7 +88,12 @@ const AuthPage = ({ fetchUserProfile }) => {
         })
         return
       }
+<<<<<<< HEAD
       // Fetch user profile after login/signup
+=======
+      navigate(`/profile/:${returneddata.user.name}`);
+      fetchUserProfile(returneddata.token); // Fetch user profile after login/signup
+>>>>>>> refs/remotes/origin/main
     } catch (error) {
       setAlert({
         show: true,

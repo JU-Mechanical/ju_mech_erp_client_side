@@ -19,6 +19,7 @@ import CompetitiveExam from "../components/userDetails/CompetitiveExam";
 import HigherStudy from "../components/userDetails/HigherStudy";
 import Placement from "../components/userDetails/Placement";
 import StartUp from "../components/userDetails/StartUp";
+import FilePreviewOverlay from "../components/FilePreview";
 
 //? Static details of the component page
 export default function UserProfile() {
@@ -145,6 +146,7 @@ export default function UserProfile() {
           {user.careerProgression?.startup && (
             <StartUp startupDetails={user.careerProgression.startup} />
           )}
+        
         </Box>
       </Box>
     </Box>
