@@ -43,8 +43,8 @@ const AuthPage = ({ fetchUserProfile }) => {
     try {
       const response = await fetch(
         isLogin
-          ? `https://ju-mech-erp-server-side-org.onrender.com/users/login`
-          : `https://ju-mech-erp-server-side-org.onrender.com/users/signup`,
+          ? `http://localhost:5000/users/login`
+          : `http://localhost:5000/users/signup`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
