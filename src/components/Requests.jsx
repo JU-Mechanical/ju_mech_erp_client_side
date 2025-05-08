@@ -25,25 +25,6 @@ const Requests = () => {
     requestDetails: "",
     shortWriteup: "",
   });
-<<<<<<< HEAD
-  const [requests,setrequests]=useState([]);
-  const [closedrequests,setclosedrequests]=useState([]);
-  useEffect(()=>{
-    const getreqs=async()=>{
-      const data={user_id:user._id};
-      console.log(data)
-        const response=await fetch('http://localhost:5000/users/getreqs',{
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify(data)
-        });
-        console.log(response)
-        const returneddata=await response.json();
-        console.log(returneddata);
-        setrequests(returneddata);
-      
-    }
-=======
   const [requests, setrequests] = useState([]);
   const [closedrequests, setclosedrequests] = useState([]);
   useEffect(() => {
@@ -60,7 +41,6 @@ const Requests = () => {
       console.log(returneddata);
       setrequests(returneddata);
     };
->>>>>>> refs/remotes/origin/main
     getreqs();
   }, []);
   const handleChange = (e) => {
@@ -70,17 +50,10 @@ const Requests = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-<<<<<<< HEAD
-      const response=await fetch('http://localhost:5000/users/createreq',{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-          body:JSON.stringify(formData)
-=======
       const response = await fetch("http://localhost:5000/users/createreq", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
->>>>>>> refs/remotes/origin/main
       });
       const data = await response.json();
       console.log(data);

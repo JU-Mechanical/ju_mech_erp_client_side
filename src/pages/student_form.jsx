@@ -109,7 +109,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
         coSupervisor: "",
         institute: "",
         sdgConnection: false,
-        outcome: "",
+        outcome: "",  
         certificate: null,
       },
     ],
