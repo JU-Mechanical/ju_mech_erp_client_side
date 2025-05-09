@@ -22,6 +22,7 @@ import {
 import { Add, Delete } from "@mui/icons-material";
 import FileUploadField from "../pages/file-upload-field";
 import { CloudUpload, Cancel, CloudDone } from "@mui/icons-material";
+import { uploadFileToCloudinary } from "../helpers/uploadfiles";
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -51,10 +52,10 @@ export default function ProgressionForm({ formData, handleChange }) {
     setTabValue(newValue);
   };
 
-  // Handle placement changes
+  // Handle placements changes
   const handleIsPlaced = (field) => {
     setIfPlaced(field);
-    if (field && (!formData.placements || formData.placements.length === 0)) {
+    if (field && (!formData.placements|| formData.placements.length === 0)) {
       handleChange({
         target: {
           name: "placements",
@@ -75,8 +76,8 @@ export default function ProgressionForm({ formData, handleChange }) {
   };
 
   const handleOfferChange = (index, field, value) => {
-    const updatedOffers = formData.placements.map((placement, i) =>
-      i === index ? { ...placement, [field]: value } : placement
+    const updatedOffers = formData.placements.map((placements, i) =>
+      i === index ? { ...placements, [field]: value } : placements
     );
     handleChange({ target: { name: "placements", value: updatedOffers } });
   };
@@ -185,7 +186,7 @@ export default function ProgressionForm({ formData, handleChange }) {
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
-        Progression/Placement/Competitive Examinations
+        Progression/placements/Competitive Examinations
       </Typography>
       <Divider className="mb-4" />
 
@@ -195,17 +196,17 @@ export default function ProgressionForm({ formData, handleChange }) {
           onChange={handleTabChange}
           aria-label="progression tabs"
         >
-          <Tab label="Placement" />
+          <Tab label="placements" />
           <Tab label="Competitive Exams" />
           <Tab label="Higher Study" />
           <Tab label="Startups" />
         </Tabs>
       </Box>
 
-      {/* Placement Tab */}
+      {/* placements Tab */}
       <TabPanel value={tabValue} index={0}>
         <Typography variant="h6" gutterBottom>
-          Placement Details
+          placements Details
         </Typography>
 
         <Grid container spacing={3}>
@@ -224,14 +225,14 @@ export default function ProgressionForm({ formData, handleChange }) {
 
         {ifPlaced && (
           <>
-            {formData.placements?.map((placement, index) => (
+            {formData.placements?.map((placements, index) => (
               <Paper key={index} className="p-4 mb-4" sx={{ mb: 4 }}>
                 <Grid container spacing={3}>
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
                       label="Company Name"
-                      value={placement.company || ""}
+                      value={placements.company || ""}
                       onChange={(e) =>
                         handleOfferChange(index, "company", e.target.value)
                       }
@@ -242,7 +243,7 @@ export default function ProgressionForm({ formData, handleChange }) {
                     <TextField
                       fullWidth
                       label="Position"
-                      value={placement.position || ""}
+                      value={placements.position || ""}
                       onChange={(e) =>
                         handleOfferChange(index, "position", e.target.value)
                       }
@@ -253,7 +254,7 @@ export default function ProgressionForm({ formData, handleChange }) {
                     <TextField
                       fullWidth
                       label="CTC (LPA)"
-                      value={placement.package || ""}
+                      value={placements.package || ""}
                       onChange={(e) =>
                         handleOfferChange(index, "package", e.target.value)
                       }
@@ -266,7 +267,7 @@ export default function ProgressionForm({ formData, handleChange }) {
                     <FormControl fullWidth>
                       <InputLabel>Employment Type</InputLabel>
                       <Select
-                        value={placement.employmentType || ""}
+                        value={placements.employmentType || ""}
                         onChange={(e) =>
                           handleOfferChange(
                             index,
@@ -286,7 +287,7 @@ export default function ProgressionForm({ formData, handleChange }) {
                     <FormControl fullWidth>
                       <InputLabel>Recruitment Type</InputLabel>
                       <Select
-                        value={placement.recruitmentType || ""}
+                        value={placements.recruitmentType || ""}
                         onChange={(e) =>
                           handleOfferChange(
                             index,
@@ -306,7 +307,7 @@ export default function ProgressionForm({ formData, handleChange }) {
                     <TextField
                       fullWidth
                       label="Year of Offer"
-                      value={placement.year || ""}
+                      value={placements.year || ""}
                       onChange={(e) =>
                         handleOfferChange(index, "year", e.target.value)
                       }

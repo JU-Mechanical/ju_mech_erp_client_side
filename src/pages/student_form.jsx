@@ -189,18 +189,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
   //console.log(user.careerProgression)
   //* state to control placement details at the university
   const [placementformData, setPlacementFormData] = useState({
-    placement: user?.careerProgression?.placement || [
-      {
-        company: "",
-        position: "",
-        employmentType: "",
-        recruitmentType: "",
-        year: "",
-        package: "",
-        accepted: false,
-        placement: null,
-      },
-    ],
+    placements:user?.careerProgression?.placement || [],
     competitiveExam: user?.careerProgression?.exams || [
       {
         examinationName: "",
@@ -385,7 +374,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
       academicBackground: acadbackformData,
       academicInfo: acedamicformData,
       careerProgression: {
-        placement: placementformData.placement,
+        placement: placementformData.placements,
         exams: placementformData.competitiveExam,
         higherStudy: placementformData.higherStudy,
         startup: placementformData.startup,
