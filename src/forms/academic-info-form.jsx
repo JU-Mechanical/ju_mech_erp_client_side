@@ -57,7 +57,7 @@ export default function AcademicInfoForm({ formData, handleChange }) {
   const addSemester = () => {
     const newSem = [
       ...formData.grades,
-      { semester: formData.grades.length + 1, sgpa: "", cgpa: "" },
+      { semester: formData.grades.length + 1, sgpa: "", cgpa: "", gradecard: null },
     ];
     handleChange({ target: { name: "grades", value: newSem } });
   };
