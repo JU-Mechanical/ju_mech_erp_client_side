@@ -381,8 +381,8 @@ export default function MultiStepForm({ fetchUserProfile }) {
     const allFormData = {
       personalInfo: personalformData,
       enrollmentDetails: enrollformData,
-      acedamicBackground: acadbackformData,
-      acedamicInfo: acedamicformData,
+      academicBackground: acadbackformData,
+      academicInfo: acedamicformData,
       careerProgression: {
         placement: placementformData.placement,
         exams: placementformData.competitiveExam,
@@ -393,8 +393,8 @@ export default function MultiStepForm({ fetchUserProfile }) {
       miscellenous: miscformData,
     };
 
-    console.log(placementformData);
-
+    console.log(JSON.stringify(allFormData.academicInfo.projectDetails));
+    console.log(typeof allFormData.academicInfo.projectDetails);
     //for submitting form data to the server
     try {
       const response = await fetch(
