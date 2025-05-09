@@ -66,8 +66,8 @@ const AuthPage = ({ fetchUserProfile }) => {
           setLogin({ user: returneddata.user, token: returneddata.token })
         );
         fetchUserProfile(returneddata.token); 
-        navigate("/");
-        return 
+        navigate(`/profile/:${returneddata.user.name}`);
+      fetchUserProfile(returneddata.token); // Fetch user profile after login/signup
       } else if(response.status == 400) {
         setAlert({
           show: true,
@@ -83,8 +83,8 @@ const AuthPage = ({ fetchUserProfile }) => {
         })
         return
       }
-      navigate(`/profile/:${returneddata.user.name}`);
-      fetchUserProfile(returneddata.token); // Fetch user profile after login/signup
+      console.log(returneddata)
+     
     } catch (error) {
       setAlert({
         show: true,

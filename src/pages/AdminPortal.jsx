@@ -37,12 +37,14 @@ export default function AdminPortal() {
                 method:"GET",
                 
                });
-               const studentdata=await response.json(); 
+               const studentdata=await response.json();
+               console.log(studentdata); 
                setStudents(studentdata); 
             } catch (error) {
                 
             }
         }
+        getallstudents();
 
       },[]);
 

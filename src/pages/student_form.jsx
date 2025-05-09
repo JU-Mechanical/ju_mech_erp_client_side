@@ -399,8 +399,8 @@ export default function MultiStepForm({ fetchUserProfile }) {
       },
     };
 
-    console.log(allFormData);
-
+    console.log(JSON.stringify(allFormData.academicInfo.projectDetails));
+    console.log(typeof allFormData.academicInfo.projectDetails);
     //for submitting form data to the server
     try {
       const response = await fetch(
