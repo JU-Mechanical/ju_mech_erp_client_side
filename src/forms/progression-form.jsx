@@ -227,7 +227,7 @@ export default function ProgressionForm({ formData, handleChange }) {
             {formData.placements?.map((placement, index) => (
               <Paper key={index} className="p-4 mb-4" sx={{ mb: 4 }}>
                 <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
                       label="Company Name"
@@ -238,7 +238,7 @@ export default function ProgressionForm({ formData, handleChange }) {
                     />
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
                       label="Position"
@@ -249,7 +249,7 @@ export default function ProgressionForm({ formData, handleChange }) {
                     />
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
                       label="CTC (LPA)"
@@ -262,7 +262,7 @@ export default function ProgressionForm({ formData, handleChange }) {
                     />
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                       <InputLabel>Employment Type</InputLabel>
                       <Select
@@ -282,7 +282,7 @@ export default function ProgressionForm({ formData, handleChange }) {
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                       <InputLabel>Recruitment Type</InputLabel>
                       <Select
@@ -302,7 +302,7 @@ export default function ProgressionForm({ formData, handleChange }) {
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
                       label="Year of Offer"
