@@ -37,12 +37,14 @@ export default function AdminPortal() {
                 method:"GET",
                 
                });
-               const studentdata=await response.json(); 
+               const studentdata=await response.json();
+               console.log(studentdata); 
                setStudents(studentdata); 
             } catch (error) {
                 
             }
         }
+        getallstudents();
 
       },[]);
 
@@ -53,7 +55,7 @@ export default function AdminPortal() {
           case "AdminDetails":
             return <AdminDetails admin={admin} />;
           case "ManageProfiles":
-            return   <UserList users={[mockData]} />
+            return   <UserList users={students} />
           case "PendingRequests":
             return <Typography variant="h5">Pending Requests Component</Typography>;
           case "Settings":
