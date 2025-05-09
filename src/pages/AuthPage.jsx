@@ -54,7 +54,9 @@ const AuthPage = ({ fetchUserProfile }) => {
           body: JSON.stringify(formData),
         }
       );
+      
       const returneddata = await response.json();
+      console.log(returneddata);
       if (response.status == 200) {
         setAlert({
           show: true,
@@ -66,7 +68,7 @@ const AuthPage = ({ fetchUserProfile }) => {
           setLogin({ user: returneddata.user, token: returneddata.token })
         );
         fetchUserProfile(returneddata.token); 
-        navigate(`/profile/:${returneddata.user.name}`);
+        navigate(`/updateform/${returneddata.user.name}`); // Redirect to update form
       fetchUserProfile(returneddata.token); // Fetch user profile after login/signup
       } else if(response.status == 400) {
         setAlert({
