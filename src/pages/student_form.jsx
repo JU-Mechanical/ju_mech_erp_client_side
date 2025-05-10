@@ -383,7 +383,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
         startup: placementformData.startup,
       },
       curricularInfo: curricularformData,
-      miscellenous: {
+      miscellaneous: {
         lor: miscformData.lor,
         keyLearnings: miscformData.keyLearnings,
         sop: miscformData.sop,

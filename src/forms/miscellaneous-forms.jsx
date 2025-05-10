@@ -18,6 +18,7 @@ import {
 } from "@mui/icons-material";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import { uploadFileToCloudinary } from "../helpers/uploadfiles";
 
 export default function MiscellaneousForm({ formData, handleChange }) {
   const isMobile = useMediaQuery("(max-width:900px)");
@@ -171,20 +172,6 @@ export default function MiscellaneousForm({ formData, handleChange }) {
         }
       />
 
-      {/* Export Data Button */}
-      <Button
-        variant="contained"
-        sx={{
-          mt: 2,
-          borderRadius: "10px",
-          background: "#007BFF",
-          "&:hover": { background: "#0056b3" },
-          width: isMobile ? "100%" : "auto",
-        }}
-        onClick={exportDataAsArray}
-      >
-        Export Data
-      </Button>
 
       {/* Snackbar for success popup */}
       <Snackbar

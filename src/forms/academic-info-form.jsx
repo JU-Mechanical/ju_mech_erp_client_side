@@ -98,13 +98,13 @@ export default function AcademicInfoForm({ formData, handleChange }) {
       ...formData.projects,
       {
         title: "",
-        type: "",
+        typeP: "",
         mode: "",
         duration: "",
         year: "",
-        grading: "",
+        graded: "",
         supervisor: "",
-        cosupervisor: "",
+        coSupervisor: "",
         institute: "",
         sdgConnection: false,
         outcome: "",
@@ -179,12 +179,15 @@ export default function AcademicInfoForm({ formData, handleChange }) {
 
   function Uploadproj(index) {
     const input = document.createElement("input");
+    console.log('hello')
     input.type = "file";
     input.accept = ".pdf,.jpg,.png"; // allow only specific types (optional)
     input.onchange = (event) => {
       const file = event.target.files[0];
+         console.log(file);
       setloading(true);
       uploadFileToCloudinary(file).then((url) => {
+     
         formData.projects[index].certificate = url;
         setloading(false);
         setSnackbarOpen(true); // Show success popup
@@ -400,7 +403,7 @@ export default function AcademicInfoForm({ formData, handleChange }) {
               <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel>Type</InputLabel>
                 <Select
-                  value={value.type}
+                  value={value.typeP}
                   Change={(e) =>
                     handleProjectChange(index, "type", e.target.value)
                   }
@@ -649,9 +652,10 @@ export default function AcademicInfoForm({ formData, handleChange }) {
                             color: "white",
                             "&:hover": { bgcolor: "#388e3c" },
                           }}
+                           onClick={() => Uploadproj(index)}
                         >
                           <CloudUpload sx={{ mr: 1 }} /> Upload
-                          <input type="file" hidden />
+                         
                         </Button>
                       ) : (
                         <Loader />
