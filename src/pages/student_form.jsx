@@ -6,7 +6,8 @@ import {
   useMediaQuery,
   Drawer,
   IconButton,
-} from "@mui/material";
+  Avatar,
+} from "@mui/material"; // Import Avatar
 //? importing multiform components
 import PersonalInfoForm from "../forms/personal-info-form"; // form component for hanlding the personal info
 import EnrollmentDetailsForm from "../forms/enrollment-details-forms"; // form component for handling the enrollment details
@@ -18,7 +19,6 @@ import MiscellaneousForms from "../forms/miscellaneous-forms"; // form component
 //? importing components
 import Sidebar from "../components/Sidebar"; // sidebar component
 import { Menu as MenuIcon } from "@mui/icons-material"; // Import MenuIcon for mobile sidebar
-import Navbar from "../components/Navbar"; // Import Navbar for mobile view
 
 export default function MultiStepForm({ fetchUserProfile }) {
   const user = localStorage.getItem("user")
@@ -109,7 +109,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
         coSupervisor: "",
         institute: "",
         sdgConnection: false,
-        outcome: "",  
+        outcome: "",
         certificate: null,
       },
     ],
@@ -189,7 +189,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
   //console.log(user.careerProgression)
   //* state to control placement details at the university
   const [placementformData, setPlacementFormData] = useState({
-    placements:user?.careerProgression?.placement || [],
+    placements: user?.careerProgression?.placement || [],
     competitiveExam: user?.careerProgression?.exams || [
       {
         examinationName: "",
@@ -367,7 +367,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
 
   //& function to handle submit of the form data to the server
   const handleFormSubmit = async () => {
-    console.log(acadbackformData)
+    console.log(acadbackformData);
     const allFormData = {
       personalInfo: personalformData,
       enrollmentDetails: enrollformData,
@@ -539,11 +539,24 @@ export default function MultiStepForm({ fetchUserProfile }) {
         <Sidebar
           activeSection={activeSection}
           setActiveSection={setActiveSection}
+          profileAvatar={
+            <Avatar
+              sx={{
+                width: 80,
+                height: 80,
+                marginBottom: 2,
+                backgroundColor: "#fff",
+                color: "#b70924",
+                fontSize: "2rem",
+              }}
+            >
+              {user?.personalInfo?.name?.charAt(0).toUpperCase() || "U"}
+            </Avatar>
+          }
         />
       )}
       {isMobile && (
         <>
-          <Navbar />
           <IconButton
             sx={{ position: "absolute", top: 16, left: 16 }}
             onClick={() => setMobileSidebarOpen(true)}
@@ -558,6 +571,20 @@ export default function MultiStepForm({ fetchUserProfile }) {
             <Sidebar
               activeSection={activeSection}
               setActiveSection={setActiveSection}
+              profileAvatar={
+                <Avatar
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    marginBottom: 2,
+                    backgroundColor: "#fff",
+                    color: "#b70924",
+                    fontSize: "2rem",
+                  }}
+                >
+                  {user?.personalInfo?.name?.charAt(0).toUpperCase() || "U"}
+                </Avatar>
+              }
             />
           </Drawer>
         </>
@@ -589,9 +616,29 @@ export default function MultiStepForm({ fetchUserProfile }) {
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "space-between", // Adjust spacing for Back and Next buttons
+            gap: 2,
           }}
         >
+          {activeSection > 0 && (
+            // Render "Back" button for all sections except the first one
+            <Button
+              variant="outlined"
+              sx={{
+                mt: 3,
+                borderRadius: "10px",
+                color: "#b70924",
+                borderColor: "#b70924",
+                "&:hover": { background: "#f5f5f5" },
+                width: isMobile ? "40%" : "20%", // Adjust button width for mobile
+              }}
+              onClick={() =>
+                setActiveSection((prev) => (prev > 0 ? prev - 1 : prev))
+              }
+            >
+              Back
+            </Button>
+          )}
           {activeSection < sections.length - 1 ? (
             // Render "Next" button for all sections except the last one
             <Button
@@ -629,20 +676,6 @@ export default function MultiStepForm({ fetchUserProfile }) {
               Submit
             </Button>
           )}
-          <Button
-            variant="outlined"
-            sx={{
-              mt: 3,
-              borderRadius: "10px",
-              color: "#b70924",
-              borderColor: "#b70924",
-              "&:hover": { background: "#f5f5f5" },
-              width: isMobile ? "40%" : "20%", // Adjust button width for mobile
-            }}
-            onClick={() => logStateValues(sections[activeSection].title)}
-          >
-            Log State
-          </Button>
         </Box>
       </Box>
     </Box>
