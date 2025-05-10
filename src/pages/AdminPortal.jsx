@@ -33,7 +33,7 @@ export default function AdminPortal() {
       useEffect(() => {
         const getallstudents=async()=>{
             try {
-               const response=await fetch("http://localhost:5000/admin/getstudents", {
+               const response=await fetch("https://jumechserver.onrender.com/admin/getstudents", {
                 method:"GET",
                 
                });
