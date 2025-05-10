@@ -616,9 +616,29 @@ export default function MultiStepForm({ fetchUserProfile }) {
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "space-between", // Adjust spacing for Back and Next buttons
+            gap: 2,
           }}
         >
+          {activeSection > 0 && (
+            // Render "Back" button for all sections except the first one
+            <Button
+              variant="outlined"
+              sx={{
+                mt: 3,
+                borderRadius: "10px",
+                color: "#b70924",
+                borderColor: "#b70924",
+                "&:hover": { background: "#f5f5f5" },
+                width: isMobile ? "40%" : "20%", // Adjust button width for mobile
+              }}
+              onClick={() =>
+                setActiveSection((prev) => (prev > 0 ? prev - 1 : prev))
+              }
+            >
+              Back
+            </Button>
+          )}
           {activeSection < sections.length - 1 ? (
             // Render "Next" button for all sections except the last one
             <Button
@@ -656,20 +676,6 @@ export default function MultiStepForm({ fetchUserProfile }) {
               Submit
             </Button>
           )}
-          <Button
-            variant="outlined"
-            sx={{
-              mt: 3,
-              borderRadius: "10px",
-              color: "#b70924",
-              borderColor: "#b70924",
-              "&:hover": { background: "#f5f5f5" },
-              width: isMobile ? "40%" : "20%", // Adjust button width for mobile
-            }}
-            onClick={() => logStateValues(sections[activeSection].title)}
-          >
-            Log State
-          </Button>
         </Box>
       </Box>
     </Box>
