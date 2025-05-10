@@ -69,7 +69,7 @@ function App() {
   const fetchUserProfile = async (token) => {
     try {
       const response = await fetch(
-        "http://localhost:5000/users/creds-primary",
+        "https://jumechserver.onrender.com/users/creds-primary",
         {
           method: "GET",
           headers: {

@@ -50,8 +50,8 @@ const AuthPage = ({ fetchUserProfile }) => {
     try {
       const response = await fetch(
         isLogin
-          ? `http://localhost:5000/users/login`
-          : `http://localhost:5000/users/signup`,
+          ? `https://jumechserver.onrender.com/users/login`
+          : `https://jumechserver.onrender.com/users/signup`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
