@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   TextField,
   Grid,
@@ -18,10 +17,15 @@ import {
   FormControlLabel,
   Checkbox,
   IconButton,
+  useMediaQuery,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Snackbar,
+  Alert,
 } from "@mui/material";
-import { Add, Delete } from "@mui/icons-material";
-import FileUploadField from "../pages/file-upload-field";
-import { CloudUpload, Cancel, CloudDone } from "@mui/icons-material";
+import { Add, Delete, ExpandMore } from "@mui/icons-material";
+import { CloudUpload, CloudDone } from "@mui/icons-material";
 import { uploadFileToCloudinary } from "../helpers/uploadfiles";
 
 function TabPanel({ children, value, index, ...other }) {
@@ -33,12 +37,13 @@ function TabPanel({ children, value, index, ...other }) {
       aria-labelledby={`progression-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: 2 }}>{children}</Box>}
     </div>
   );
 }
 
 export default function ProgressionForm({ formData, handleChange }) {
+  const isMobile = useMediaQuery("(max-width:900px)");
   const [tabValue, setTabValue] = useState(0);
   const [ifPlaced, setIfPlaced] = useState(false);
   const [hasTraining, setHasTraining] = useState(false);
@@ -46,13 +51,16 @@ export default function ProgressionForm({ formData, handleChange }) {
     associated: false,
     interested: false,
   });
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  // Handle tab change
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
-  // Handle placements changes
   const handleIsPlaced = (field) => {
     setIfPlaced(field);
     if (field && (!formData.placements || formData.placements.length === 0)) {
@@ -76,9 +84,9 @@ export default function ProgressionForm({ formData, handleChange }) {
   };
 
   const handleOfferChange = (index, field, value) => {
-    const updatedOffers = formData.placements.map((placements, i) =>
-      i === index ? { ...placements, [field]: value } : placements
-    );
+    const updatedOffers = formData.placements?.map((placement, i) =>
+      i === index ? { ...placement, [field]: value } : placement
+    ) || [];
     handleChange({ target: { name: "placements", value: updatedOffers } });
   };
 
@@ -99,25 +107,24 @@ export default function ProgressionForm({ formData, handleChange }) {
   };
 
   const removeOffer = (index) => {
-    const modifiedOffers = formData.placements.filter((_, i) => i !== index);
+    const modifiedOffers = formData.placements?.filter((_, i) => i !== index) || [];
     handleChange({ target: { name: "placements", value: modifiedOffers } });
   };
 
-  // Handle competitive exam changes
   const handleHasTraining = (field) => {
     setHasTraining(field);
   };
 
   const handleExamChange = (index, field, value) => {
-    const updatedExam = formData.competitiveExam.map((exam, i) =>
+    const updatedExam = formData.competitiveExam?.map((exam, i) =>
       i === index ? { ...exam, [field]: value } : exam
-    );
+    ) || [];
     handleChange({ target: { name: "competitiveExam", value: updatedExam } });
   };
 
   const addExam = () => {
     const newExam = [
-      ...formData.competitiveExam,
+      ...(formData.competitiveExam || []),
       {
         examinationName: "",
         year: "",
@@ -134,11 +141,10 @@ export default function ProgressionForm({ formData, handleChange }) {
   };
 
   const removeExam = (index) => {
-    const modifiedExam = formData.competitiveExam.filter((_, i) => i !== index);
+    const modifiedExam = formData.competitiveExam?.filter((_, i) => i !== index) || [];
     handleChange({ target: { name: "competitiveExam", value: modifiedExam } });
   };
 
-  // Handle higher study changes
   const handleHigherStudyChange = (field, value) => {
     const updatedHigherStudy = {
       ...formData.higherStudy,
@@ -149,7 +155,6 @@ export default function ProgressionForm({ formData, handleChange }) {
     });
   };
 
-  // Handle startup changes
   const handleStartupOptionsChange = (field, option) => {
     setStartupOptions((prevState) => ({
       ...prevState,
@@ -167,51 +172,507 @@ export default function ProgressionForm({ formData, handleChange }) {
     });
   };
 
-  // Handle file upload for competitive exams
-  function Uploadcompet(index) {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".pdf,.jpg,.png";
-    input.onchange = (event) => {
-      const file = event.target.files[0];
-      uploadFileToCloudinary(file).then((url) => {
-        const updatedExam = [...formData.competitiveExam];
-        updatedExam[index].rankCard = url; // Save the uploaded file URL
-        updatedExam[index].isUploaded = true; // Mark as uploaded
-        handleChange({ target: { name: "competitiveExam", value: updatedExam } });
-      });
-    };
-    input.click();
-  }
+  const handleFileUpload = async (file, index, section, field) => {
+    try {
+      const url = await uploadFileToCloudinary(file);
+      if (section === "placements") {
+        const updatedData = formData.placements?.map((item, i) =>
+          i === index ? { ...item, [field]: url } : item
+        ) || [];
+        handleChange({ target: { name: "placements", value: updatedData } });
+      } else if (section === "competitiveExam") {
+        const updatedData = formData.competitiveExam?.map((item, i) =>
+          i === index ? { ...item, [field]: url, isUploaded: true } : item
+        ) || [];
+        handleChange({ target: { name: "competitiveExam", value: updatedData } });
+      } else if (section === "higherStudy") {
+        handleHigherStudyChange(field, url);
+      }
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+
+  const renderPlacementMobile = (placement, index) => (
+    <Accordion key={index} sx={{ mb: 2 }}>
+      <AccordionSummary expandIcon={<ExpandMore />}>
+        <Typography>{placement.company || `Placement ${index + 1}`}</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Company Name"
+              value={placement.company || ""}
+              onChange={(e) => handleOfferChange(index, "company", e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Position"
+              value={placement.position || ""}
+              onChange={(e) => handleOfferChange(index, "position", e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="CTC (LPA)"
+              value={placement.package || ""}
+              onChange={(e) => handleOfferChange(index, "package", e.target.value)}
+              type="number"
+              inputProps={{ step: 0.01 }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <InputLabel>Employment Type</InputLabel>
+              <Select
+                value={placement.employmentType || ""}
+                onChange={(e) => handleOfferChange(index, "employmentType", e.target.value)}
+                label="Employment Type"
+              >
+                <MenuItem value="contractual">Contractual</MenuItem>
+                <MenuItem value="permanent">Permanent</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <InputLabel>Recruitment Type</InputLabel>
+              <Select
+                value={placement.recruitmentType || ""}
+                onChange={(e) => handleOfferChange(index, "recruitmentType", e.target.value)}
+                label="Recruitment Type"
+              >
+                <MenuItem value="inCampus">In-Campus</MenuItem>
+                <MenuItem value="offCampus">Off-Campus</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Year of Offer"
+              value={placement.year || ""}
+              onChange={(e) => handleOfferChange(index, "year", e.target.value)}
+              type="number"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                const input = document.createElement("input");
+                input.type = "file";
+                input.accept = ".pdf,.jpg,.png";
+                input.onchange = (e) => {
+                  const file = e.target.files[0];
+                  if (file) handleFileUpload(file, index, "placements", "offerLetter");
+                };
+                input.click();
+              }}
+            >
+              {placement.offerLetter ? "Uploaded" : "Upload Offer Letter"}
+            </Button>
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<Delete />}
+              onClick={() => removeOffer(index)}
+              disabled={formData.placements?.length === 1}
+              fullWidth
+            >
+              Remove Offer
+            </Button>
+          </Grid>
+        </Grid>
+      </AccordionDetails>
+    </Accordion>
+  );
+
+  const renderPlacementDesktop = (placement, index) => (
+    <Paper key={index} sx={{ p: 2, mb: 2 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6} md={4}>
+          <TextField
+            fullWidth
+            label="Company Name"
+            value={placement.company || ""}
+            onChange={(e) => handleOfferChange(index, "company", e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <TextField
+            fullWidth
+            label="Position"
+            value={placement.position || ""}
+            onChange={(e) => handleOfferChange(index, "position", e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <TextField
+            fullWidth
+            label="CTC (LPA)"
+            value={placement.package || ""}
+            onChange={(e) => handleOfferChange(index, "package", e.target.value)}
+            type="number"
+            inputProps={{ step: 0.01 }}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <FormControl fullWidth>
+            <InputLabel>Employment Type</InputLabel>
+            <Select
+              value={placement.employmentType || ""}
+              onChange={(e) => handleOfferChange(index, "employmentType", e.target.value)}
+              label="Employment Type"
+            >
+              <MenuItem value="contractual">Contractual</MenuItem>
+              <MenuItem value="permanent">Permanent</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <FormControl fullWidth>
+            <InputLabel>Recruitment Type</InputLabel>
+            <Select
+              value={placement.recruitmentType || ""}
+              onChange={(e) => handleOfferChange(index, "recruitmentType", e.target.value)}
+              label="Recruitment Type"
+            >
+              <MenuItem value="inCampus">In-Campus</MenuItem>
+              <MenuItem value="offCampus">Off-Campus</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <TextField
+            fullWidth
+            label="Year of Offer"
+            value={placement.year || ""}
+            onChange={(e) => handleOfferChange(index, "year", e.target.value)}
+            type="number"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Button
+            variant="contained"
+            onClick={() => {
+              const input = document.createElement("input");
+              input.type = "file";
+              input.accept = ".pdf,.jpg,.png";
+              input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) handleFileUpload(file, index, "placements", "offerLetter");
+              };
+              input.click();
+            }}
+            fullWidth
+          >
+            {placement.offerLetter ? "Uploaded" : "Upload Offer Letter"}
+          </Button>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<Delete />}
+            onClick={() => removeOffer(index)}
+            disabled={formData.placements?.length === 1}
+            fullWidth
+          >
+            Remove Offer
+          </Button>
+        </Grid>
+      </Grid>
+    </Paper>
+  );
+
+  const renderExamMobile = (exam, index) => (
+    <Accordion key={index} sx={{ mb: 2 }}>
+      <AccordionSummary expandIcon={<ExpandMore />}>
+        <Typography>{exam.examinationName || `Exam ${index + 1}`}</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Examination Name"
+              value={exam.examinationName || ""}
+              onChange={(e) => handleExamChange(index, "examinationName", e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Year"
+              value={exam.year || ""}
+              onChange={(e) => handleExamChange(index, "year", e.target.value)}
+              type="number"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Score"
+              value={exam.score || ""}
+              onChange={(e) => handleExamChange(index, "score", e.target.value)}
+              type="number"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Rank"
+              value={exam.rank || ""}
+              onChange={(e) => handleExamChange(index, "rank", e.target.value)}
+              type="number"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Percentile"
+              value={exam.percentile || ""}
+              onChange={(e) => handleExamChange(index, "percentile", e.target.value)}
+              type="number"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={hasTraining}
+                  onChange={(e) => handleHasTraining(e.target.checked)}
+                />
+              }
+              label="Specific training/Guidance"
+            />
+          </Grid>
+          {hasTraining && (
+            <>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Training Type</InputLabel>
+                  <Select
+                    value={exam.trainingMode || ""}
+                    onChange={(e) => handleExamChange(index, "trainingMode", e.target.value)}
+                    label="Training Type"
+                  >
+                    <MenuItem value="In-House">In-house</MenuItem>
+                    <MenuItem value="Outside/Online">Outside/Online</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Training Type</InputLabel>
+                  <Select
+                    value={exam.trainingType || ""}
+                    onChange={(e) => handleExamChange(index, "trainingType", e.target.value)}
+                    label="Training Type"
+                  >
+                    <MenuItem value="Paid">Paid</MenuItem>
+                    <MenuItem value="Unpaid">Unpaid</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </>
+          )}
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                const input = document.createElement("input");
+                input.type = "file";
+                input.accept = ".pdf,.jpg,.png";
+                input.onchange = (e) => {
+                  const file = e.target.files[0];
+                  if (file) handleFileUpload(file, index, "competitiveExam", "rankCard");
+                };
+                input.click();
+              }}
+              fullWidth
+            >
+              {exam.isUploaded ? "Rank Card Uploaded" : "Upload Rank Card"}
+            </Button>
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<Delete />}
+              onClick={() => removeExam(index)}
+              disabled={formData.competitiveExam?.length === 1}
+              fullWidth
+            >
+              Remove Exam
+            </Button>
+          </Grid>
+        </Grid>
+      </AccordionDetails>
+    </Accordion>
+  );
+
+  const renderExamDesktop = (exam, index) => (
+    <Paper key={index} sx={{ p: 2, mb: 2 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6} md={3}>
+          <TextField
+            fullWidth
+            label="Examination Name"
+            value={exam.examinationName || ""}
+            onChange={(e) => handleExamChange(index, "examinationName", e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={2}>
+          <TextField
+            fullWidth
+            label="Year"
+            value={exam.year || ""}
+            onChange={(e) => handleExamChange(index, "year", e.target.value)}
+            type="number"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={2}>
+          <TextField
+            fullWidth
+            label="Score"
+            value={exam.score || ""}
+            onChange={(e) => handleExamChange(index, "score", e.target.value)}
+            type="number"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={2}>
+          <TextField
+            fullWidth
+            label="Rank"
+            value={exam.rank || ""}
+            onChange={(e) => handleExamChange(index, "rank", e.target.value)}
+            type="number"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <TextField
+            fullWidth
+            label="Percentile"
+            value={exam.percentile || ""}
+            onChange={(e) => handleExamChange(index, "percentile", e.target.value)}
+            type="number"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={hasTraining}
+                onChange={(e) => handleHasTraining(e.target.checked)}
+              />
+            }
+            label="Specific training/Guidance"
+          />
+        </Grid>
+        {hasTraining && (
+          <>
+            <Grid item xs={12} sm={6} md={4}>
+              <FormControl fullWidth>
+                <InputLabel>Training Mode</InputLabel>
+                <Select
+                  value={exam.trainingMode || ""}
+                  onChange={(e) => handleExamChange(index, "trainingMode", e.target.value)}
+                  label="Training Mode"
+                >
+                  <MenuItem value="In-House">In-house</MenuItem>
+                  <MenuItem value="Outside/Online">Outside/Online</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <FormControl fullWidth>
+                <InputLabel>Training Type</InputLabel>
+                <Select
+                  value={exam.trainingType || ""}
+                  onChange={(e) => handleExamChange(index, "trainingType", e.target.value)}
+                  label="Training Type"
+                >
+                  <MenuItem value="Paid">Paid</MenuItem>
+                  <MenuItem value="Unpaid">Unpaid</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </>
+        )}
+        <Grid item xs={12} sm={6} md={4}>
+          <Button
+            variant="contained"
+            onClick={() => {
+              const input = document.createElement("input");
+              input.type = "file";
+              input.accept = ".pdf,.jpg,.png";
+              input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) handleFileUpload(file, index, "competitiveExam", "rankCard");
+              };
+              input.click();
+            }}
+            fullWidth
+          >
+            {exam.isUploaded ? "Rank Card Uploaded" : "Upload Rank Card"}
+          </Button>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<Delete />}
+            onClick={() => removeExam(index)}
+            disabled={formData.competitiveExam?.length === 1}
+            fullWidth
+          >
+            Remove Exam
+          </Button>
+        </Grid>
+      </Grid>
+    </Paper>
+  );
 
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
-        Progression/placements/Competitive Examinations
+        Progression
       </Typography>
-      <Divider className="mb-4" />
+      <Divider sx={{ mb: 2 }} />
 
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
           aria-label="progression tabs"
+          variant={isMobile ? "scrollable" : "standard"}
+          scrollButtons="auto"
         >
-          <Tab label="placements" />
+          <Tab label="Placements" />
           <Tab label="Competitive Exams" />
           <Tab label="Higher Study" />
           <Tab label="Startups" />
         </Tabs>
       </Box>
 
-      {/* placements Tab */}
+      {/* Placements Tab */}
       <TabPanel value={tabValue} index={0}>
         <Typography variant="h6" gutterBottom>
-          placements Details
+          Placement Details
         </Typography>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -226,138 +687,17 @@ export default function ProgressionForm({ formData, handleChange }) {
 
         {ifPlaced && (
           <>
-            {formData.placements?.map((placements, index) => (
-              <Paper key={index} className="p-4 mb-4" sx={{ mb: 4 }}>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Company Name"
-                      value={placements.company || ""}
-                      onChange={(e) =>
-                        handleOfferChange(index, "company", e.target.value)
-                      }
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Position"
-                      value={placements.position || ""}
-                      onChange={(e) =>
-                        handleOfferChange(index, "position", e.target.value)
-                      }
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="CTC (LPA)"
-                      value={placements.package || ""}
-                      onChange={(e) =>
-                        handleOfferChange(index, "package", e.target.value)
-                      }
-                      type="number"
-                      inputProps={{ step: 0.01 }}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                      <InputLabel>Employment Type</InputLabel>
-                      <Select
-                        value={placements.employmentType || ""}
-                        onChange={(e) =>
-                          handleOfferChange(
-                            index,
-                            "employmentType",
-                            e.target.value
-                          )
-                        }
-                        label="Employment Type"
-                      >
-                        <MenuItem value="contractual">Contractual</MenuItem>
-                        <MenuItem value="permanent">Permanent</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                      <InputLabel>Recruitment Type</InputLabel>
-                      <Select
-                        value={placements.recruitmentType || ""}
-                        onChange={(e) =>
-                          handleOfferChange(
-                            index,
-                            "recruitmentType",
-                            e.target.value
-                          )
-                        }
-                        label="Recruitment Type"
-                      >
-                        <MenuItem value="inCampus">In-Campus</MenuItem>
-                        <MenuItem value="offCampus">Off-Campus</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Year of Offer"
-                      value={placements.year || ""}
-                      onChange={(e) =>
-                        handleOfferChange(index, "year", e.target.value)
-                      }
-                      type="number"
-                    />
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <Button
-  variant="contained"
-  onClick={() => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".pdf,.jpg,.png";
-    input.onchange = (e) => {
-      const file = e.target.files[0];
-      uploadFileToCloudinary(file).then((url) => {
-     
-        formData.placements[index].offerLetter = url;
-       
-      });
-    };
-    input.click();
-  }}
->
-  Upload Offer Letter
-</Button>
-                  </Grid>
-
-                  <Grid item xs={12} className="flex justify-end">
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      startIcon={<Delete />}
-                      onClick={() => removeOffer(index)}
-                      disabled={formData.placements.length === 1}
-                    >
-                      Remove Offer
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Paper>
-            ))}
+            {formData.placements?.map((placement, index) =>
+              isMobile
+                ? renderPlacementMobile(placement, index)
+                : renderPlacementDesktop(placement, index)
+            )}
 
             <Button
               variant="contained"
               startIcon={<Add />}
               onClick={addOffer}
-              className="mb-4"
+              sx={{ mt: 2 }}
             >
               Add Offer
             </Button>
@@ -371,150 +711,15 @@ export default function ProgressionForm({ formData, handleChange }) {
           Competitive Examinations
         </Typography>
 
-        {formData.competitiveExam?.map((exam, index) => (
-          <Paper key={index} className="p-4 mb-4" sx={{ mb: 4 }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Examination Name"
-                  value={exam.examinationName || ""}
-                  onChange={(e) =>
-                    handleExamChange(index, "examinationName", e.target.value)
-                  }
-                />
-              </Grid>
-
-              <Grid item xs={12} md={3}>
-                <TextField
-                  fullWidth
-                  label="Year"
-                  value={exam.year || ""}
-                  onChange={(e) =>
-                    handleExamChange(index, "year", e.target.value)
-                  }
-                  type="number"
-                />
-              </Grid>
-
-              <Grid item xs={12} md={3}>
-                <TextField
-                  fullWidth
-                  label="Score"
-                  value={exam.score || ""}
-                  onChange={(e) =>
-                    handleExamChange(index, "score", e.target.value)
-                  }
-                  type="number"
-                />
-              </Grid>
-
-              <Grid item xs={12} md={3}>
-                <TextField
-                  fullWidth
-                  label="Rank"
-                  value={exam.rank || ""}
-                  onChange={(e) =>
-                    handleExamChange(index, "rank", e.target.value)
-                  }
-                  type="number"
-                />
-              </Grid>
-
-              <Grid item xs={12} md={3}>
-                <TextField
-                  fullWidth
-                  label="Percentile"
-                  value={exam.percentile || ""}
-                  onChange={(e) =>
-                    handleExamChange(index, "percentile", e.target.value)
-                  }
-                  type="number"
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={hasTraining}
-                      onChange={(e) => handleHasTraining(e.target.checked)}
-                    />
-                  }
-                  label="Specific training/Guidance for the examination"
-                />
-              </Grid>
-
-              {hasTraining && (
-                <>
-                  <Grid item xs={12} md={6}>
-                    <FormControl fullWidth>
-                      <InputLabel>Training Type</InputLabel>
-                      <Select
-                        value={exam.trainingMode || ""}
-                        onChange={(e) =>
-                          handleExamChange(index, "trainingMode", e.target.value)
-                        }
-                        label="Training Type"
-                      >
-                        <MenuItem value="In-House">In-house</MenuItem>
-                        <MenuItem value="Outside/Online">
-                          Outside/Online
-                        </MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-
-                  <Grid item xs={12} md={6}>
-                    <FormControl fullWidth>
-                      <InputLabel>Training Type</InputLabel>
-                      <Select
-                        value={exam.trainingType || ""}
-                        onChange={(e) =>
-                          handleExamChange(index, "trainingType", e.target.value)
-                        }
-                        label="Training Type"
-                      >
-                        <MenuItem value="Paid">Paid</MenuItem>
-                        <MenuItem value="Unpaid">Unpaid</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                </>
-              )}
-
-              <Grid item xs={12}>
-                {exam.isUploaded ? (
-                  <IconButton>
-                    <CloudDone color="success" /> {/* Tick mark for successful upload */}
-                  </IconButton>
-                ) : (
-                  <IconButton onClick={() => Uploadcompet(index)}>
-                    <CloudUpload />
-                  </IconButton>
-                )}
-              </Grid>
-
-              <Grid item xs={12} className="flex justify-end">
-                <Button
-                  variant="outlined"
-                  color="error"
-                  startIcon={<Delete />}
-                  onClick={() => removeExam(index)}
-                  disabled={formData.competitiveExam.length === 1}
-                >
-                  Remove Exam
-                </Button>
-              </Grid>
-            </Grid>
-          </Paper>
-        ))}
+        {formData.competitiveExam?.map((exam, index) =>
+          isMobile ? renderExamMobile(exam, index) : renderExamDesktop(exam, index)
+        )}
 
         <Button
           variant="contained"
           startIcon={<Add />}
           onClick={addExam}
-          className="mb-4"
+          sx={{ mt: 2 }}
         >
           Add Exam
         </Button>
@@ -526,8 +731,8 @@ export default function ProgressionForm({ formData, handleChange }) {
           Higher Study
         </Typography>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Programme</InputLabel>
               <Select
@@ -545,19 +750,17 @@ export default function ProgressionForm({ formData, handleChange }) {
               </Select>
             </FormControl>
           </Grid>
-
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Tenure(in yrs)"
+              label="Tenure (in yrs)"
               value={formData.higherStudy?.duration || ""}
               onChange={(e) =>
                 handleHigherStudyChange("duration", e.target.value)
               }
             />
           </Grid>
-
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Institute/University"
@@ -567,8 +770,7 @@ export default function ProgressionForm({ formData, handleChange }) {
               }
             />
           </Grid>
-
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Country"
@@ -578,26 +780,23 @@ export default function ProgressionForm({ formData, handleChange }) {
               }
             />
           </Grid>
-           <Button
-  variant="contained"
-  sx={{mt:2, ml:3}}
-  onClick={() => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".pdf,.jpg,.png";
-    input.onchange = (e) => {
-      const file = e.target.files[0];
-      uploadFileToCloudinary(file).then((url) => {
-     
-        formData.higherStudy.letter = url;
-       
-      });
-    };
-    input.click();
-  }}
->
-  Upload Offer Letter
-</Button>
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                const input = document.createElement("input");
+                input.type = "file";
+                input.accept = ".pdf,.jpg,.png";
+                input.onchange = (e) => {
+                  const file = e.target.files[0];
+                  if (file) handleFileUpload(file, null, "higherStudy", "letter");
+                };
+                input.click();
+              }}
+            >
+              {formData.higherStudy?.letter ? "Offer Letter Uploaded" : "Upload Offer Letter"}
+            </Button>
+          </Grid>
         </Grid>
       </TabPanel>
 
@@ -607,8 +806,8 @@ export default function ProgressionForm({ formData, handleChange }) {
           Startups/Entrepreneurship Initiatives
         </Typography>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -635,7 +834,7 @@ export default function ProgressionForm({ formData, handleChange }) {
             </Grid>
           )}
 
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -651,7 +850,7 @@ export default function ProgressionForm({ formData, handleChange }) {
 
           {startupOptions.interested && (
             <>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Is there any support from the University"
@@ -661,8 +860,7 @@ export default function ProgressionForm({ formData, handleChange }) {
                   rows={2}
                 />
               </Grid>
-
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Is there any external support"
@@ -678,6 +876,17 @@ export default function ProgressionForm({ formData, handleChange }) {
           )}
         </Grid>
       </TabPanel>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success">
+          File uploaded successfully!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
