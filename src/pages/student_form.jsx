@@ -7,7 +7,9 @@ import {
   Drawer,
   IconButton,
   Avatar,
-} from "@mui/material"; // Import Avatar
+  Snackbar,
+  Alert,
+} from "@mui/material"; // Import Avatar, Snackbar, and Alert
 //? importing multiform components
 import PersonalInfoForm from "../forms/personal-info-form"; // form component for hanlding the personal info
 import EnrollmentDetailsForm from "../forms/enrollment-details-forms"; // form component for handling the enrollment details
@@ -31,8 +33,14 @@ export default function MultiStepForm({ fetchUserProfile }) {
   const [activeSection, setActiveSection] = useState(0); //state to control session
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width:900px)"); // responsive state property
-  const user=useSelector((state)=>state.user);
+  const user = useSelector((state) => state.user);
   console.log(user);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   //* state object to store personal details/general info of student
   const [personalformData, setPersonalFormData] = useState({
     name: user?.personalInfo?.name || "",
@@ -410,6 +418,9 @@ export default function MultiStepForm({ fetchUserProfile }) {
         const data = await response.json();
         console.log("Form submitted successfully:", data);
 
+        // Show success popup
+        setSnackbarOpen(true);
+
         // fetch user details after form submission
         const token = document.cookie
           .split("; ")
@@ -681,6 +692,20 @@ export default function MultiStepForm({ fetchUserProfile }) {
           )}
         </Box>
       </Box>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Form submitted successfully!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
