@@ -26,7 +26,6 @@ import { CloudUpload, Cancel, CloudDone } from "@mui/icons-material";
 import { uploadFileToCloudinary } from "../helpers/uploadfiles";
 
 export default function CoCurricularForm({ formData, handleChange }) {
-  //* state value to check if the screen is mobile or not
   const isMobile = useMediaQuery("(max-width:900px)");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
@@ -34,7 +33,6 @@ export default function CoCurricularForm({ formData, handleChange }) {
     setSnackbarOpen(false);
   };
 
-  //* Default row structures for each section
   const defaultRows = {
     clubs: {
       name: "",
@@ -87,39 +85,39 @@ export default function CoCurricularForm({ formData, handleChange }) {
     },
   };
 
-  //& functions regarding row operations
-  //? Function to add a new row
   const handleAddRow = (section) => {
     const updatedSection = [...(formData[section] || []), defaultRows[section]];
     handleChange({ target: { name: section, value: updatedSection } });
   };
 
-  //? Function to handle changes in a row
   const handleChangeRow = (index, field, value, section) => {
-    const updatedSection = [...formData[section]];
-    updatedSection[index][field] = value;
+    const updatedSection = formData[section].map((row, i) => 
+      i === index ? { ...row, [field]: value } : row
+    );
     handleChange({ target: { name: section, value: updatedSection } });
   };
 
-  //? Function to delete a row
   const handleRemoveRow = (index, section) => {
     const updatedSection = formData[section].filter((_, i) => i !== index);
     handleChange({ target: { name: section, value: updatedSection } });
   };
 
-  function Upload(index, type) {
+  const handleUpload = (index, type) => {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".pdf,.jpg,.png";
     input.onchange = (event) => {
       const file = event.target.files[0];
       uploadFileToCloudinary(file).then((url) => {
-        formData[type][index].certificate = url;
-        setSnackbarOpen(true); // Show success popup
+        const updatedSection = formData[type].map((row, i) => 
+          i === index ? { ...row, certificate: url } : row
+        );
+        handleChange({ target: { name: type, value: updatedSection } });
+        setSnackbarOpen(true);
       });
     };
     input.click();
-  }
+  };
 
   return (
     <Box
@@ -136,7 +134,7 @@ export default function CoCurricularForm({ formData, handleChange }) {
       >
         Co-Curricular Activities
       </Typography>
-      {/* Selection Panel */}
+      
       {Object.keys(defaultRows).map((section) => (
         <FormControlLabel
           key={section}
@@ -162,7 +160,6 @@ export default function CoCurricularForm({ formData, handleChange }) {
         />
       ))}
 
-      {/* Dynamic Sections */}
       {Object.keys(defaultRows).map((section) =>
         formData[section]?.length > 0 ? (
           <Section
@@ -184,9 +181,11 @@ export default function CoCurricularForm({ formData, handleChange }) {
             handleAddRow={handleAddRow}
             handleChangeRow={handleChangeRow}
             handleRemoveRow={handleRemoveRow}
+            handleUpload={handleUpload}
           />
         ) : null
       )}
+      
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
@@ -203,122 +202,112 @@ export default function CoCurricularForm({ formData, handleChange }) {
       </Snackbar>
     </Box>
   );
+}
 
-  //? defined reusable function
-  function Section({
-    title,
-    rows,
-    section,
-    fields,
-    isMobile,
-    handleAddRow,
-    handleChangeRow,
-    handleRemoveRow,
-  }) {
-    return (
-      <Box sx={{ mt: 2 }}>
-        <Typography variant="h6">{title}</Typography>
-        {isMobile ? (
-          rows.map((row, index) => (
-            <Accordion key={index}>
-              <AccordionSummary expandIcon={<ExpandMore />}>
-                <Typography>{row.name || `Entry ${index + 1}`}</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  {fields.map((field) => (
-                    <TextField
-                      key={field.key}
-                      label={field.label}
-                      value={row[field.key]}
-                      onChange={(e) =>
-                        handleChangeRow(
-                          index,
-                          field.key,
-                          e.target.value,
-                          section
-                        )
-                      }
-                    />
-                  ))}
-                  {!formData[section][index].clubs ? (
-                    <IconButton onClick={() => Upload(index, section)}>
-                      <CloudUpload />
-                    </IconButton>
-                  ) : (
-                    <IconButton>
-                      <CloudDone />
-                    </IconButton>
-                  )}
+function Section({
+  title,
+  rows,
+  section,
+  fields,
+  isMobile,
+  handleAddRow,
+  handleChangeRow,
+  handleRemoveRow,
+  handleUpload,
+}) {
+  return (
+    <Box sx={{ mt: 2 }}>
+      <Typography variant="h6">{title}</Typography>
+      {isMobile ? (
+        rows.map((row, index) => (
+          <Accordion key={index}>
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              <Typography>{row.name || `Entry ${index + 1}`}</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {fields.map((field) => (
+                  <TextField
+                    key={field.key}
+                    label={field.label}
+                    fullWidth
+                    value={row[field.key] || ""}
+                    onChange={(e) =>
+                      handleChangeRow(
+                        index,
+                        field.key,
+                        e.target.value,
+                        section
+                      )
+                    }
+                  />
+                ))}
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <IconButton onClick={() => handleUpload(index, section)}>
+                    {row.certificate ? <CloudDone /> : <CloudUpload />}
+                  </IconButton>
                   <IconButton onClick={() => handleRemoveRow(index, section)}>
                     <Delete />
                   </IconButton>
                 </Box>
-              </AccordionDetails>
-            </Accordion>
-          ))
-        ) : (
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  {fields.map((field) => (
-                    <TableCell key={field.key}>{field.label}</TableCell>
-                  ))}
-                  <TableCell>Certificate</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row, index) => (
-                  <TableRow key={index}>
-                    {fields.map((field) => (
-                      <TableCell key={field.key}>
-                        <TextField
-                          value={row[field.key]}
-                          onChange={(e) =>
-                            handleChangeRow(
-                              index,
-                              field.key,
-                              e.target.value,
-                              section
-                            )
-                          }
-                        />
-                      </TableCell>
-                    ))}
-                    <TableCell>
-                      {!formData[section][index].clubs ? (
-                        <IconButton onClick={() => Upload(index, section)}>
-                          <CloudUpload />
-                        </IconButton>
-                      ) : (
-                        <IconButton>
-                          <CloudDone />
-                        </IconButton>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <IconButton
-                        onClick={() => handleRemoveRow(index, section)}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
+              </Box>
+            </AccordionDetails>
+          </Accordion>
+        ))
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                {fields.map((field) => (
+                  <TableCell key={field.key}>{field.label}</TableCell>
                 ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-        <Button
-          startIcon={<Add />}
-          onClick={() => handleAddRow(section)}
-          sx={{ mt: 2 }}
-        >
-          Add Entry
-        </Button>
-      </Box>
-    );
-  }
+                <TableCell>Certificate</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row, index) => (
+                <TableRow key={index}>
+                  {fields.map((field) => (
+                    <TableCell key={field.key}>
+                      <TextField
+                        fullWidth
+                        value={row[field.key] || ""}
+                        onChange={(e) =>
+                          handleChangeRow(
+                            index,
+                            field.key,
+                            e.target.value,
+                            section
+                          )
+                        }
+                      />
+                    </TableCell>
+                  ))}
+                  <TableCell>
+                    <IconButton onClick={() => handleUpload(index, section)}>
+                      {row.certificate ? <CloudDone /> : <CloudUpload />}
+                    </IconButton>
+                  </TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleRemoveRow(index, section)}>
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+      <Button
+        startIcon={<Add />}
+        onClick={() => handleAddRow(section)}
+        sx={{ mt: 2 }}
+      >
+        Add Entry
+      </Button>
+    </Box>
+  );
 }
