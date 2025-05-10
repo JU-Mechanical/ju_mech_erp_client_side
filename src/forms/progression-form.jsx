@@ -55,7 +55,7 @@ export default function ProgressionForm({ formData, handleChange }) {
   // Handle placements changes
   const handleIsPlaced = (field) => {
     setIfPlaced(field);
-    if (field && (!formData.placements|| formData.placements.length === 0)) {
+    if (field && (!formData.placements || formData.placements.length === 0)) {
       handleChange({
         target: {
           name: "placements",
@@ -127,6 +127,7 @@ export default function ProgressionForm({ formData, handleChange }) {
         trainingType: "",
         trainingMode: "",
         rankCard: null,
+        isUploaded: false,
       },
     ];
     handleChange({ target: { name: "competitiveExam", value: newExam } });
@@ -173,10 +174,10 @@ export default function ProgressionForm({ formData, handleChange }) {
     input.accept = ".pdf,.jpg,.png";
     input.onchange = (event) => {
       const file = event.target.files[0];
-      // You'll need to implement uploadFileToCloudinary or similar function
       uploadFileToCloudinary(file).then((url) => {
         const updatedExam = [...formData.competitiveExam];
-        updatedExam[index].rankCard = url;
+        updatedExam[index].rankCard = url; // Save the uploaded file URL
+        updatedExam[index].isUploaded = true; // Mark as uploaded
         handleChange({ target: { name: "competitiveExam", value: updatedExam } });
       });
     };
@@ -470,13 +471,13 @@ export default function ProgressionForm({ formData, handleChange }) {
               )}
 
               <Grid item xs={12}>
-                {!exam.rankCard ? (
-                  <IconButton onClick={() => Uploadcompet(index)}>
-                    <CloudUpload />
+                {exam.isUploaded ? (
+                  <IconButton>
+                    <CloudDone color="success" /> {/* Tick mark for successful upload */}
                   </IconButton>
                 ) : (
-                  <IconButton>
-                    <CloudDone />
+                  <IconButton onClick={() => Uploadcompet(index)}>
+                    <CloudUpload />
                   </IconButton>
                 )}
               </Grid>

@@ -15,7 +15,6 @@ import JULogo from "../assets/julogo.png";
 import { useDispatch } from "react-redux";
 import { setLogin } from "../state";
 import { useNavigate } from "react-router-dom";
-import bg from "../assets/user_login_bg.jpeg";
 import AlertNotification from "../components/Alert";
 
 const PRIMARY_COLOR = "#b70924";
@@ -30,7 +29,12 @@ const AuthPage = ({ fetchUserProfile }) => {
     rollNumber: "",
     password: "",
   });
-  const [alert, setAlert] = useState({show: false, type: "", title:"", message: ""});
+  const [alert, setAlert] = useState({
+    show: false,
+    type: "",
+    title: "",
+    message: "",
+  });
   const isMobile = useMediaQuery("(max-width:600px)");
 
   const dispatch = useDispatch();
@@ -54,7 +58,7 @@ const AuthPage = ({ fetchUserProfile }) => {
           body: JSON.stringify(formData),
         }
       );
-      
+
       const returneddata = await response.json();
       console.log(returneddata);
       if (response.status == 200) {
@@ -62,32 +66,34 @@ const AuthPage = ({ fetchUserProfile }) => {
         dispatch(
           setLogin({ user: returneddata.user, token: returneddata.token })
         );
-        fetchUserProfile(returneddata.token); 
+        fetchUserProfile(returneddata.token);
         navigate(`/updateform/${returneddata.user.name}`); // Redirect to update form
-      fetchUserProfile(returneddata.token); // Fetch user profile after login/signup
-      } else if(response.status == 400) {
+        fetchUserProfile(returneddata.token); // Fetch user profile after login/signup
+      } else if (response.status == 400) {
         setAlert({
           show: true,
           type: "warning",
-          message: returneddata.message || "Authentication failed. Please try again."
-        })
-        return
+          message:
+            returneddata.message || "Authentication failed. Please try again.",
+        });
+        return;
       } else if (response.status == 500) {
         setAlert({
           show: true,
           type: "error",
-          message: returneddata.message || "An unexpected error occurred. Please try again later."
-        })
-        return
+          message:
+            returneddata.message ||
+            "An unexpected error occurred. Please try again later.",
+        });
+        return;
       }
-      console.log(returneddata)
-     
+      console.log(returneddata);
     } catch (error) {
       setAlert({
         show: true,
         type: "error",
-        message: "An unexpected error occured. Please try again later."
-      })
+        message: "An unexpected error occured. Please try again later.",
+      });
     }
   };
 
@@ -104,44 +110,46 @@ const AuthPage = ({ fetchUserProfile }) => {
         alignItems: "center",
         justifyContent: "center",
         padding: 2,
-        backgroundImage: `url(${bg})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        position: "relative",
         overflow: "hidden",
       }}
       maxWidth={false}
     >
+      {/* Background Image with Blur */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: `url(https://res.cloudinary.com/dig63yzxi/image/upload/v1740909479/L_v8wbsy.jpg)`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          filter: "blur(8px)", // Blur effect for the background
+          zIndex: 1,
+        }}
+      ></div>
+
+      {/* Form Container */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0, transition: { duration: 0.8 } }}
         style={{
           height: isMobile ? "80%" : "20%",
           overflowY: "auto",
+          position: "relative",
+          zIndex: 2, // Ensure the form is above the blurred background
         }}
       >
-        {/* Snackbar for Alert */}
-        {/* <Snackbar
-          open={alert.show}
-          autoHideDuration={5000} // Alert will disappear after 5 seconds
-          onClose={() => setAlert({ ...alert, show: false })}
-          anchorOrigin={{ vertical: "top", horizontal: "right" }} // Position: Top-Right
-        >
-          <AlertNotification
-            type={alert.type}
-            message={alert.message}
-            title={alert.title}
-            onClose={() => setAlert({ ...alert, show: false })}
-          />
-        </Snackbar> */}
-
         <AnimatePresence mode="wait">
           <motion.div
-            key={isLogin ? "login" : "signup"} // Unique key for each form
-            initial={{ rotateY: 90, opacity: 0 }} // Start with a rotated state
-            animate={{ rotateY: 0, opacity: 1 }} // Animate to the front
-            exit={{ rotateY: -90, opacity: 0 }} // Exit with a flip
-            transition={{ duration: 0.6 }} // Animation duration
+            key={isLogin ? "login" : "signup"}
+            initial={{ rotateY: 90, opacity: 0 }}
+            animate={{ rotateY: 0, opacity: 1 }}
+            exit={{ rotateY: -90, opacity: 0 }}
+            transition={{ duration: 0.6 }}
           >
             <Paper
               elevation={10}
@@ -149,12 +157,16 @@ const AuthPage = ({ fetchUserProfile }) => {
                 padding: isMobile ? 3 : 4,
                 borderRadius: 4,
                 textAlign: "center",
-                bgcolor: "white",
-                height: isMobile ? "70vh" : "auto",
-                minHeight: isMobile ? "70vh" : "500px",
+                bgcolor: "rgba(255, 255, 255, 0.9)", // Slightly transparent background
+                boxShadow: "0px 4px 30px rgba(255, 255, 255, 0.5)", // Glowing effect
+                backdropFilter: "blur(10px)", // Add blur effect to the box
                 width: isMobile ? "90vw" : "400px",
                 overflowY: "auto",
                 maxHeight: "90vh",
+                transition: "all 0.3s ease-in-out",
+                "&:hover": {
+                  boxShadow: "0px 8px 40px rgba(255, 255, 255, 0.8)", // Enhance glow on hover
+                },
               }}
             >
               <img
@@ -285,7 +297,7 @@ const AuthPage = ({ fetchUserProfile }) => {
                   transition: { duration: 0.3 },
                 }}
               >
-                <Button
+                {/* <Button
                   fullWidth
                   sx={{
                     display: "flex",
@@ -310,7 +322,7 @@ const AuthPage = ({ fetchUserProfile }) => {
                 >
                   <GoogleIcon sx={{ fontSize: isMobile ? "22px" : "24px" }} />
                   {isLogin ? "Login with Google" : "Sign Up with Google"}
-                </Button>
+                </Button> */}
               </motion.div>
 
               <Typography
