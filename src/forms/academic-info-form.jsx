@@ -95,7 +95,7 @@ export default function AcademicInfoForm({ formData, handleChange }) {
   //? Addition of Projects
   const addProject = () => {
     const newProject = [
-      ...formData.projectDetails,
+      ...formData.projects,
       {
         title: "",
         type: "",
@@ -111,7 +111,7 @@ export default function AcademicInfoForm({ formData, handleChange }) {
         certificate: [],
       },
     ];
-    handleChange({ target: { name: "projectDetails", value: newProject } });
+    handleChange({ target: { name: "projects", value: newProject } });
   };
 
   //& Removal functions for removing student details
@@ -153,11 +153,11 @@ export default function AcademicInfoForm({ formData, handleChange }) {
   //? handle project entry
   const handleProjectChange = (index, field, value) => {
     console.log("Project Change", index, field, value);
-    const updatedProjects = formData.projectDetails.map((project, i) =>
-      i === index ? { ...formData.projectDetails[i], [field]: value } : project
+    const updatedProjects = formData.projects.map((project, i) =>
+      i === index ? { ...formData.projects[i], [field]: value } : project
     );
     handleChange({
-      target: { name: "projectDetails", value: updatedProjects },
+      target: { name: "projects", value: updatedProjects },
     });
   };
 
@@ -185,7 +185,7 @@ export default function AcademicInfoForm({ formData, handleChange }) {
       const file = event.target.files[0];
       setloading(true);
       uploadFileToCloudinary(file).then((url) => {
-        formData.projectDetails[index].certificate = url;
+        formData.projects[index].certificate = url;
         setloading(false);
         setSnackbarOpen(true); // Show success popup
       });
@@ -391,7 +391,7 @@ export default function AcademicInfoForm({ formData, handleChange }) {
         </Typography>
 
         {isMobile ? (
-          formData.projectDetails.map((value, index) => (
+          formData.projects.map((value, index) => (
             <Paper
               key={index}
               sx={{ p: 3, mb: 2, borderRadius: 2, boxShadow: 3 }}
@@ -526,7 +526,7 @@ export default function AcademicInfoForm({ formData, handleChange }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {formData.projectDetails.map((value, index) => (
+                {formData.projects.map((value, index) => (
                   <TableRow
                     key={index}
                     sx={{

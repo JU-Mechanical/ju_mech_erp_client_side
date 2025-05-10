@@ -81,7 +81,7 @@ function App() {
       const data = await response.json();
       if (response.ok) {
         dispatch(setLogin({ user: data.user, token }));
-        localStorage.setItem("user", JSON.stringify(data.user));
+        
       } else {
         console.error("Error fetching user profile:", data.message);
       }
@@ -89,7 +89,7 @@ function App() {
       console.error("Error fetching user profile:", error);
     }
   };
-
+  console.log(user);
   return (
     <ThemeProvider theme={theme}>
       <Router>

@@ -58,12 +58,7 @@ const AuthPage = ({ fetchUserProfile }) => {
       const returneddata = await response.json();
       console.log(returneddata);
       if (response.status == 200) {
-        setAlert({
-          show: true,
-          type: "success",
-          message: returneddata.message || "Login Successful!"
-        })
-        document.cookie = `token=${returneddata.token}; path=/; max-age=86400; secure; SameSite=Strict`;
+       
         dispatch(
           setLogin({ user: returneddata.user, token: returneddata.token })
         );
