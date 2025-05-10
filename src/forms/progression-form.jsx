@@ -317,12 +317,25 @@ export default function ProgressionForm({ formData, handleChange }) {
                   </Grid>
 
                   <Grid item xs={12}>
-                    <FileUploadField
-                      label="Upload Offer Letter (if any)"
-                      onChange={(files) =>
-                        handleOfferChange(index, "offerLetter", files[0])
-                      }
-                    />
+                    <Button
+  variant="contained"
+  onClick={() => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".pdf,.jpg,.png";
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      uploadFileToCloudinary(file).then((url) => {
+     
+        formData.placements[index].offerLetter = url;
+       
+      });
+    };
+    input.click();
+  }}
+>
+  Upload Offer Letter
+</Button>
                   </Grid>
 
                   <Grid item xs={12} className="flex justify-end">
@@ -565,6 +578,26 @@ export default function ProgressionForm({ formData, handleChange }) {
               }
             />
           </Grid>
+           <Button
+  variant="contained"
+  sx={{mt:2, ml:3}}
+  onClick={() => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".pdf,.jpg,.png";
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      uploadFileToCloudinary(file).then((url) => {
+     
+        formData.higherStudy.letter = url;
+       
+      });
+    };
+    input.click();
+  }}
+>
+  Upload Offer Letter
+</Button>
         </Grid>
       </TabPanel>
 

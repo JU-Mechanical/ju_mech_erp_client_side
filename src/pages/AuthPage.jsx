@@ -61,50 +61,18 @@ const AuthPage = ({ fetchUserProfile }) => {
 
       const returneddata = await response.json();
       console.log(returneddata);
-      if (response.status == 200) {
-        setAlert({
-          show: true,
-          type: "success",
-          message: returneddata.message || "Login Successful!",
-        });
-        document.cookie = `token=${returneddata.token}; path=/; max-age=86400; secure; SameSite=Strict`;
-        dispatch(
+      dispatch(
           setLogin({ user: returneddata.user, token: returneddata.token })
         );
-        fetchUserProfile(returneddata.token);
+       
         navigate(`/updateform/${returneddata.user.name}`); // Redirect to update form
-        fetchUserProfile(returneddata.token); // Fetch user profile after login/signup
-      } else if (response.status == 400) {
-        setAlert({
-          show: true,
-          type: "warning",
-          message:
-            returneddata.message || "Authentication failed. Please try again.",
-        });
-        return;
-      } else if (response.status == 500) {
-        setAlert({
-          show: true,
-          type: "error",
-          message:
-            returneddata.message ||
-            "An unexpected error occurred. Please try again later.",
-        });
-        return;
-      }
-      console.log(returneddata);
+       
+      
     } catch (error) {
-      setAlert({
-        show: true,
-        type: "error",
-        message: "An unexpected error occured. Please try again later.",
-      });
+      console.log(error)
     }
   };
 
-  const handleGoogleSignIn = () => {
-    console.log("Google Sign-In Clicked");
-  };
 
   return (
     <Container

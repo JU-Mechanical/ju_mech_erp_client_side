@@ -19,17 +19,20 @@ import MiscellaneousForms from "../forms/miscellaneous-forms"; // form component
 //? importing components
 import Sidebar from "../components/Sidebar"; // sidebar component
 import { Menu as MenuIcon } from "@mui/icons-material"; // Import MenuIcon for mobile sidebar
+import Navbar from "../components/Navbar"; // Import Navbar for mobile view
+import { useSelector } from "react-redux";
 
 export default function MultiStepForm({ fetchUserProfile }) {
-  const user = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user"))
-    : null;
+  // const user = localStorage.getItem("user")
+  //   ? JSON.parse(localStorage.getItem("user"))
+  //   : null;
 
   //* states to control the active section of the form
   const [activeSection, setActiveSection] = useState(0); //state to control session
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width:900px)"); // responsive state property
-
+  const user=useSelector((state)=>state.user);
+  console.log(user);
   //* state object to store personal details/general info of student
   const [personalformData, setPersonalFormData] = useState({
     name: user?.personalInfo?.name || "",
@@ -97,7 +100,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
     ],
     selectedProfessional: user?.acedamicInfo?.selectedProfessional || [],
     selectedOpen: user?.acedamicInfo?.selectedOpen || [],
-    projectDetails: user?.acedamicInfo?.projectDetails || [
+    projects: user?.acedamicInfo?.projects || [
       {
         title: "",
         type: "",
@@ -380,7 +383,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
         startup: placementformData.startup,
       },
       curricularInfo: curricularformData,
-      miscellenous: {
+      miscellaneous: {
         lor: miscformData.lor,
         keyLearnings: miscformData.keyLearnings,
         sop: miscformData.sop,
