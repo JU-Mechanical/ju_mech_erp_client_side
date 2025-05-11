@@ -47,7 +47,10 @@ const openElectivesList = [
 export default function AcademicInfoForm({ formData, handleChange }) {
   //* State variables
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState({
+    gradeLoading: false,
+    projectLoading: false,
+  });
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleSnackbarClose = () => {
@@ -57,7 +60,12 @@ export default function AcademicInfoForm({ formData, handleChange }) {
   const addSemester = () => {
     const newSem = [
       ...formData.grades,
-      { semester: formData.grades.length + 1, sgpa: "", cgpa: "", gradecard: null },
+      {
+        semester: formData.grades.length + 1,
+        sgpa: "",
+        cgpa: "",
+        gradecard: null,
+      },
     ];
     handleChange({ target: { name: "grades", value: newSem } });
   };
@@ -161,37 +169,52 @@ export default function AcademicInfoForm({ formData, handleChange }) {
     });
   };
 
+  //? Function for loading the grades certificate
   function Upload(index) {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".pdf,.jpg,.png"; // allow only specific types (optional)
     input.onchange = (event) => {
       const file = event.target.files[0];
-      setloading(true);
-      uploadFileToCloudinary(file).then((url) => {
-        formData.grades[index].gradecard = url;
-        setloading(false);
-        setSnackbarOpen(true); // Show success popup
-      });
+      setloading({ ...loading, gradeLoading: true });
+      console.log(loading.gradeLoading);
+      uploadFileToCloudinary(file)
+        .then((url) => {
+          formData.grades[index].gradecard = url;
+          setSnackbarOpen(true); // Show success popup
+        })
+        .catch((error) => {
+          console.error("File upload failed:", error);
+        })
+        .finally(() => {
+          setloading({ ...loading, gradeLoading: false });
+          console.log(loading.gradeLoading);
+        });
     };
     input.click();
   }
 
+  //? Function for loading the project certificate
   function Uploadproj(index) {
     const input = document.createElement("input");
-    console.log('hello')
     input.type = "file";
     input.accept = ".pdf,.jpg,.png"; // allow only specific types (optional)
     input.onchange = (event) => {
       const file = event.target.files[0];
-         console.log(file);
-      setloading(true);
-      uploadFileToCloudinary(file).then((url) => {
-     
-        formData.projects[index].certificate = url;
-        setloading(false);
-        setSnackbarOpen(true); // Show success popup
-      });
+      setloading({ ...loading, projectLoading: true });
+      console.log(loading.projectLoading);
+      uploadFileToCloudinary(file)
+        .then((url) => {
+          formData.projects[index].certificate = url;
+          setSnackbarOpen(true); // Show success popup
+        })
+        .catch((error) => {
+          console.error("File upload failed:", error);
+        })
+        .finally(() => {
+          setloading({ ...loading, projectLoading: false });
+          console.log(loading.projectLoading);
+        });
     };
     input.click();
   }
@@ -243,9 +266,24 @@ export default function AcademicInfoForm({ formData, handleChange }) {
                   {/* Table icons */}
                   <TableCell sx={{ display: "flex", flexDirection: "row" }}>
                     {!formData.grades[index].gradecard ? (
-                      <IconButton onClick={() => Upload(index)}>
-                        <CloudUpload />
-                      </IconButton>
+                      loading.gradeLoading ? (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 32, // Match the height of other elements
+                            width: 32, // Optional: Keep it consistent
+                          }}
+                        >
+                          <CircularProgress size={20} color={"secondary"} />{" "}
+                          {/* Adjust size to fit */}
+                        </Box>
+                      ) : (
+                        <IconButton onClick={() => Upload(index)}>
+                          <CloudUpload />
+                        </IconButton>
+                      )
                     ) : (
                       <IconButton>
                         <CloudDone />
@@ -484,7 +522,7 @@ export default function AcademicInfoForm({ formData, handleChange }) {
                   <MenuItem value="No">No</MenuItem>
                 </Select>
               </FormControl>
-              {!loading ? (
+              {!loading.projectLoading ? (
                 <Button
                   variant="contained"
                   component="label"
@@ -496,7 +534,18 @@ export default function AcademicInfoForm({ formData, handleChange }) {
                   <input type="file" hidden />
                 </Button>
               ) : (
-                <Loader />
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: 32, // Match the height of other elements
+                    width: 32, // Optional: Keep it consistent
+                  }}
+                >
+                  <CircularProgress size={20} color={"secondary"} />{" "}
+                  {/* Adjust size to fit */}
+                </Box>
               )}
             </Paper>
           ))
@@ -643,7 +692,33 @@ export default function AcademicInfoForm({ formData, handleChange }) {
                       </Select>
                     </TableCell>
                     <TableCell>
-                      {!loading ? (
+                      {formData.projects[index].certificate ? (
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() =>
+                            window.open(
+                              formData.projects[index].certificate,
+                              "_blank"
+                            )
+                          }
+                          sx={{ textTransform: "none" }}
+                        >
+                          View
+                        </Button>
+                      ) : loading.projectLoading ? (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 32, // Match the height of other elements
+                            width: 32, // Optional: Keep it consistent
+                          }}
+                        >
+                          <CircularProgress size={20} color={"secondary"} />
+                        </Box>
+                      ) : (
                         <Button
                           variant="contained"
                           component="label"
@@ -652,13 +727,10 @@ export default function AcademicInfoForm({ formData, handleChange }) {
                             color: "white",
                             "&:hover": { bgcolor: "#388e3c" },
                           }}
-                           onClick={() => Uploadproj(index)}
+                          onClick={() => Uploadproj(index)}
                         >
                           <CloudUpload sx={{ mr: 1 }} /> Upload
-                         
                         </Button>
-                      ) : (
-                        <Loader />
                       )}
                     </TableCell>
                   </TableRow>

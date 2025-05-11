@@ -19,10 +19,12 @@ import {
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { uploadFileToCloudinary } from "../helpers/uploadfiles";
+import Loader from "../components/Loading";
 
 export default function MiscellaneousForm({ formData, handleChange }) {
   const isMobile = useMediaQuery("(max-width:900px)");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [loading, setloading] = useState(false);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -35,10 +37,11 @@ export default function MiscellaneousForm({ formData, handleChange }) {
     input.accept = ".pdf,.jpg,.png"; // allow only specific types (optional)
     input.onchange = (event) => {
       const file = event.target.files[0];
+      setloading(true);
       uploadFileToCloudinary(file).then((url) => {
         formData.lor = url;
         setSnackbarOpen(true); // Show success popup
-        console.log(url);
+        setloading(false);
       });
     };
     input.click();
@@ -104,7 +107,19 @@ export default function MiscellaneousForm({ formData, handleChange }) {
             Upload();
           }}
         >
-          {!formData.lor ? (
+          {loading ? (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: 32, // Match the height of other elements
+                width: 32, // Optional: Keep it consistent
+              }}
+            >
+              <Loader size={24} color={"default"} />{" "}
+            </Box> // Show loader while uploading
+          ) : !formData.lor ? (
             <IconButton>
               <CloudUpload />
             </IconButton>
@@ -171,7 +186,6 @@ export default function MiscellaneousForm({ formData, handleChange }) {
           handleChange({ target: { name: "vision", value: e.target.value } })
         }
       />
-
 
       {/* Snackbar for success popup */}
       <Snackbar

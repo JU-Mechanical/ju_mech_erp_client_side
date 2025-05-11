@@ -24,10 +24,20 @@ import {
 import { Add, Delete, ExpandMore } from "@mui/icons-material";
 import { CloudUpload, Cancel, CloudDone } from "@mui/icons-material";
 import { uploadFileToCloudinary } from "../helpers/uploadfiles";
+import Loader from "../components/Loading";
 
 export default function CoCurricularForm({ formData, handleChange }) {
   const isMobile = useMediaQuery("(max-width:900px)");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [loading, setloading] = useState({
+    clubs: false,
+    techFests: false,
+    leadership: false,
+    sports: false,
+    skills: false,
+    socialActivities: false,
+    seminars: false,
+  });
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -91,7 +101,7 @@ export default function CoCurricularForm({ formData, handleChange }) {
   };
 
   const handleChangeRow = (index, field, value, section) => {
-    const updatedSection = formData[section].map((row, i) => 
+    const updatedSection = formData[section].map((row, i) =>
       i === index ? { ...row, [field]: value } : row
     );
     handleChange({ target: { name: section, value: updatedSection } });
@@ -108,13 +118,21 @@ export default function CoCurricularForm({ formData, handleChange }) {
     input.accept = ".pdf,.jpg,.png";
     input.onchange = (event) => {
       const file = event.target.files[0];
-      uploadFileToCloudinary(file).then((url) => {
-        const updatedSection = formData[type].map((row, i) => 
-          i === index ? { ...row, certificate: url } : row
-        );
-        handleChange({ target: { name: type, value: updatedSection } });
-        setSnackbarOpen(true);
-      });
+      setloading((prev) => ({ ...prev, [type]: true })); // Set loading for the specific type
+      uploadFileToCloudinary(file)
+        .then((url) => {
+          const updatedSection = formData[type].map((row, i) =>
+            i === index ? { ...row, certificate: url } : row
+          );
+          handleChange({ target: { name: type, value: updatedSection } });
+          setSnackbarOpen(true);
+        })
+        .catch((error) => {
+          console.error("File upload failed:", error);
+        })
+        .finally(() => {
+          setloading((prev) => ({ ...prev, [type]: false })); // Reset loading for the specific type
+        });
     };
     input.click();
   };
@@ -134,7 +152,7 @@ export default function CoCurricularForm({ formData, handleChange }) {
       >
         Co-Curricular Activities
       </Typography>
-      
+
       {Object.keys(defaultRows).map((section) => (
         <FormControlLabel
           key={section}
@@ -182,10 +200,11 @@ export default function CoCurricularForm({ formData, handleChange }) {
             handleChangeRow={handleChangeRow}
             handleRemoveRow={handleRemoveRow}
             handleUpload={handleUpload}
+            loading={loading}
           />
         ) : null
       )}
-      
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
@@ -214,6 +233,7 @@ function Section({
   handleChangeRow,
   handleRemoveRow,
   handleUpload,
+  loading,
 }) {
   return (
     <Box sx={{ mt: 2 }}>
@@ -233,18 +253,19 @@ function Section({
                     fullWidth
                     value={row[field.key] || ""}
                     onChange={(e) =>
-                      handleChangeRow(
-                        index,
-                        field.key,
-                        e.target.value,
-                        section
-                      )
+                      handleChangeRow(index, field.key, e.target.value, section)
                     }
                   />
                 ))}
                 <Box sx={{ display: "flex", gap: 1 }}>
                   <IconButton onClick={() => handleUpload(index, section)}>
-                    {row.certificate ? <CloudDone /> : <CloudUpload />}
+                    {loading[section] ? (
+                      <Loader size={24} /> // Show loader when uploading
+                    ) : row.certificate ? (
+                      <CloudDone />
+                    ) : (
+                      <CloudUpload />
+                    )}
                   </IconButton>
                   <IconButton onClick={() => handleRemoveRow(index, section)}>
                     <Delete />
@@ -287,7 +308,23 @@ function Section({
                   ))}
                   <TableCell>
                     <IconButton onClick={() => handleUpload(index, section)}>
-                      {row.certificate ? <CloudDone /> : <CloudUpload />}
+                      {loading[section] ? (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 32, // Match the height of other elements
+                            width: 32, // Optional: Keep it consistent
+                          }}
+                        >
+                          <Loader size={24} color={"primary"} />{" "}
+                        </Box> // Show loader when uploading
+                      ) : row.certificate ? (
+                        <CloudDone />
+                      ) : (
+                        <CloudUpload />
+                      )}
                     </IconButton>
                   </TableCell>
                   <TableCell>
