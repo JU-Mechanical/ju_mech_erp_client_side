@@ -27,6 +27,7 @@ import {
 import { Add, Delete, ExpandMore } from "@mui/icons-material";
 import { CloudUpload, CloudDone } from "@mui/icons-material";
 import { uploadFileToCloudinary } from "../helpers/uploadfiles";
+import CircularProgress from "../components/Loading";
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -46,6 +47,11 @@ export default function ProgressionForm({ formData, handleChange }) {
   const isMobile = useMediaQuery("(max-width:900px)");
   const [tabValue, setTabValue] = useState(0);
   const [ifPlaced, setIfPlaced] = useState(false);
+  const [loading, setLoading] = useState({
+    placements: false,
+    competitiveExam: false,
+    higherStudy: false,
+  });
   const [hasTraining, setHasTraining] = useState(false);
   const [startupOptions, setStartupOptions] = useState({
     associated: false,
@@ -84,9 +90,10 @@ export default function ProgressionForm({ formData, handleChange }) {
   };
 
   const handleOfferChange = (index, field, value) => {
-    const updatedOffers = formData.placements?.map((placement, i) =>
-      i === index ? { ...placement, [field]: value } : placement
-    ) || [];
+    const updatedOffers =
+      formData.placements?.map((placement, i) =>
+        i === index ? { ...placement, [field]: value } : placement
+      ) || [];
     handleChange({ target: { name: "placements", value: updatedOffers } });
   };
 
@@ -107,7 +114,8 @@ export default function ProgressionForm({ formData, handleChange }) {
   };
 
   const removeOffer = (index) => {
-    const modifiedOffers = formData.placements?.filter((_, i) => i !== index) || [];
+    const modifiedOffers =
+      formData.placements?.filter((_, i) => i !== index) || [];
     handleChange({ target: { name: "placements", value: modifiedOffers } });
   };
 
@@ -116,9 +124,10 @@ export default function ProgressionForm({ formData, handleChange }) {
   };
 
   const handleExamChange = (index, field, value) => {
-    const updatedExam = formData.competitiveExam?.map((exam, i) =>
-      i === index ? { ...exam, [field]: value } : exam
-    ) || [];
+    const updatedExam =
+      formData.competitiveExam?.map((exam, i) =>
+        i === index ? { ...exam, [field]: value } : exam
+      ) || [];
     handleChange({ target: { name: "competitiveExam", value: updatedExam } });
   };
 
@@ -141,7 +150,8 @@ export default function ProgressionForm({ formData, handleChange }) {
   };
 
   const removeExam = (index) => {
-    const modifiedExam = formData.competitiveExam?.filter((_, i) => i !== index) || [];
+    const modifiedExam =
+      formData.competitiveExam?.filter((_, i) => i !== index) || [];
     handleChange({ target: { name: "competitiveExam", value: modifiedExam } });
   };
 
@@ -174,21 +184,39 @@ export default function ProgressionForm({ formData, handleChange }) {
 
   const handleFileUpload = async (file, index, section, field) => {
     try {
+      if (section === "placements") {
+        setLoading((prev) => ({ ...prev, placements: true }));
+      } else if (section === "competitiveExam") {
+        setLoading((prev) => ({ ...prev, competitiveExam: true }));
+      } else if (section === "higherStudy") {
+        setLoading((prev) => ({ ...prev, higherStudy: true }));
+      }
       const url = await uploadFileToCloudinary(file);
       if (section === "placements") {
-        const updatedData = formData.placements?.map((item, i) =>
-          i === index ? { ...item, [field]: url } : item
-        ) || [];
+        const updatedData =
+          formData.placements?.map((item, i) =>
+            i === index ? { ...item, [field]: url } : item
+          ) || [];
         handleChange({ target: { name: "placements", value: updatedData } });
       } else if (section === "competitiveExam") {
-        const updatedData = formData.competitiveExam?.map((item, i) =>
-          i === index ? { ...item, [field]: url, isUploaded: true } : item
-        ) || [];
-        handleChange({ target: { name: "competitiveExam", value: updatedData } });
+        const updatedData =
+          formData.competitiveExam?.map((item, i) =>
+            i === index ? { ...item, [field]: url, isUploaded: true } : item
+          ) || [];
+        handleChange({
+          target: { name: "competitiveExam", value: updatedData },
+        });
       } else if (section === "higherStudy") {
         handleHigherStudyChange(field, url);
       }
       setSnackbarOpen(true);
+      if (section === "placements") {
+        setLoading((prev) => ({ ...prev, placements: false }));
+      } else if (section === "competitiveExam") {
+        setLoading((prev) => ({ ...prev, competitiveExam: false }));
+      } else if (section === "higherStudy") {
+        setLoading((prev) => ({ ...prev, higherStudy: false }));
+      }
     } catch (error) {
       console.error("Error uploading file:", error);
     }
@@ -206,7 +234,9 @@ export default function ProgressionForm({ formData, handleChange }) {
               fullWidth
               label="Company Name"
               value={placement.company || ""}
-              onChange={(e) => handleOfferChange(index, "company", e.target.value)}
+              onChange={(e) =>
+                handleOfferChange(index, "company", e.target.value)
+              }
             />
           </Grid>
           <Grid item xs={12}>
@@ -214,7 +244,9 @@ export default function ProgressionForm({ formData, handleChange }) {
               fullWidth
               label="Position"
               value={placement.position || ""}
-              onChange={(e) => handleOfferChange(index, "position", e.target.value)}
+              onChange={(e) =>
+                handleOfferChange(index, "position", e.target.value)
+              }
             />
           </Grid>
           <Grid item xs={12}>
@@ -222,7 +254,9 @@ export default function ProgressionForm({ formData, handleChange }) {
               fullWidth
               label="CTC (LPA)"
               value={placement.package || ""}
-              onChange={(e) => handleOfferChange(index, "package", e.target.value)}
+              onChange={(e) =>
+                handleOfferChange(index, "package", e.target.value)
+              }
               type="number"
               inputProps={{ step: 0.01 }}
             />
@@ -232,7 +266,9 @@ export default function ProgressionForm({ formData, handleChange }) {
               <InputLabel>Employment Type</InputLabel>
               <Select
                 value={placement.employmentType || ""}
-                onChange={(e) => handleOfferChange(index, "employmentType", e.target.value)}
+                onChange={(e) =>
+                  handleOfferChange(index, "employmentType", e.target.value)
+                }
                 label="Employment Type"
               >
                 <MenuItem value="contractual">Contractual</MenuItem>
@@ -245,7 +281,9 @@ export default function ProgressionForm({ formData, handleChange }) {
               <InputLabel>Recruitment Type</InputLabel>
               <Select
                 value={placement.recruitmentType || ""}
-                onChange={(e) => handleOfferChange(index, "recruitmentType", e.target.value)}
+                onChange={(e) =>
+                  handleOfferChange(index, "recruitmentType", e.target.value)
+                }
                 label="Recruitment Type"
               >
                 <MenuItem value="inCampus">In-Campus</MenuItem>
@@ -271,7 +309,8 @@ export default function ProgressionForm({ formData, handleChange }) {
                 input.accept = ".pdf,.jpg,.png";
                 input.onchange = (e) => {
                   const file = e.target.files[0];
-                  if (file) handleFileUpload(file, index, "placements", "offerLetter");
+                  if (file)
+                    handleFileUpload(file, index, "placements", "offerLetter");
                 };
                 input.click();
               }}
@@ -304,7 +343,9 @@ export default function ProgressionForm({ formData, handleChange }) {
             fullWidth
             label="Company Name"
             value={placement.company || ""}
-            onChange={(e) => handleOfferChange(index, "company", e.target.value)}
+            onChange={(e) =>
+              handleOfferChange(index, "company", e.target.value)
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
@@ -312,7 +353,9 @@ export default function ProgressionForm({ formData, handleChange }) {
             fullWidth
             label="Position"
             value={placement.position || ""}
-            onChange={(e) => handleOfferChange(index, "position", e.target.value)}
+            onChange={(e) =>
+              handleOfferChange(index, "position", e.target.value)
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
@@ -320,7 +363,9 @@ export default function ProgressionForm({ formData, handleChange }) {
             fullWidth
             label="CTC (LPA)"
             value={placement.package || ""}
-            onChange={(e) => handleOfferChange(index, "package", e.target.value)}
+            onChange={(e) =>
+              handleOfferChange(index, "package", e.target.value)
+            }
             type="number"
             inputProps={{ step: 0.01 }}
           />
@@ -330,7 +375,9 @@ export default function ProgressionForm({ formData, handleChange }) {
             <InputLabel>Employment Type</InputLabel>
             <Select
               value={placement.employmentType || ""}
-              onChange={(e) => handleOfferChange(index, "employmentType", e.target.value)}
+              onChange={(e) =>
+                handleOfferChange(index, "employmentType", e.target.value)
+              }
               label="Employment Type"
             >
               <MenuItem value="contractual">Contractual</MenuItem>
@@ -343,7 +390,9 @@ export default function ProgressionForm({ formData, handleChange }) {
             <InputLabel>Recruitment Type</InputLabel>
             <Select
               value={placement.recruitmentType || ""}
-              onChange={(e) => handleOfferChange(index, "recruitmentType", e.target.value)}
+              onChange={(e) =>
+                handleOfferChange(index, "recruitmentType", e.target.value)
+              }
               label="Recruitment Type"
             >
               <MenuItem value="inCampus">In-Campus</MenuItem>
@@ -369,13 +418,33 @@ export default function ProgressionForm({ formData, handleChange }) {
               input.accept = ".pdf,.jpg,.png";
               input.onchange = (e) => {
                 const file = e.target.files[0];
-                if (file) handleFileUpload(file, index, "placements", "offerLetter");
+                if (file)
+                  handleFileUpload(file, index, "placements", "offerLetter");
               };
               input.click();
             }}
             fullWidth
           >
-            {placement.offerLetter ? "Uploaded" : "Upload Offer Letter"}
+            {placement.offerLetter ? (
+              loading.placements ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: 32, // Match the height of other elements
+                    width: 32, // Optional: Keep it consistent
+                  }}
+                >
+                  <CircularProgress size={20} color={"default"} />{" "}
+                  {/* Adjust size to fit */}
+                </Box>
+              ) : (
+                "Uploaded"
+              )
+            ) : (
+              "Upload Offer Letter"
+            )}
           </Button>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
@@ -406,7 +475,9 @@ export default function ProgressionForm({ formData, handleChange }) {
               fullWidth
               label="Examination Name"
               value={exam.examinationName || ""}
-              onChange={(e) => handleExamChange(index, "examinationName", e.target.value)}
+              onChange={(e) =>
+                handleExamChange(index, "examinationName", e.target.value)
+              }
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -441,7 +512,9 @@ export default function ProgressionForm({ formData, handleChange }) {
               fullWidth
               label="Percentile"
               value={exam.percentile || ""}
-              onChange={(e) => handleExamChange(index, "percentile", e.target.value)}
+              onChange={(e) =>
+                handleExamChange(index, "percentile", e.target.value)
+              }
               type="number"
             />
           </Grid>
@@ -463,7 +536,9 @@ export default function ProgressionForm({ formData, handleChange }) {
                   <InputLabel>Training Type</InputLabel>
                   <Select
                     value={exam.trainingMode || ""}
-                    onChange={(e) => handleExamChange(index, "trainingMode", e.target.value)}
+                    onChange={(e) =>
+                      handleExamChange(index, "trainingMode", e.target.value)
+                    }
                     label="Training Type"
                   >
                     <MenuItem value="In-House">In-house</MenuItem>
@@ -476,7 +551,9 @@ export default function ProgressionForm({ formData, handleChange }) {
                   <InputLabel>Training Type</InputLabel>
                   <Select
                     value={exam.trainingType || ""}
-                    onChange={(e) => handleExamChange(index, "trainingType", e.target.value)}
+                    onChange={(e) =>
+                      handleExamChange(index, "trainingType", e.target.value)
+                    }
                     label="Training Type"
                   >
                     <MenuItem value="Paid">Paid</MenuItem>
@@ -495,13 +572,38 @@ export default function ProgressionForm({ formData, handleChange }) {
                 input.accept = ".pdf,.jpg,.png";
                 input.onchange = (e) => {
                   const file = e.target.files[0];
-                  if (file) handleFileUpload(file, index, "competitiveExam", "rankCard");
+                  if (file)
+                    handleFileUpload(
+                      file,
+                      index,
+                      "competitiveExam",
+                      "rankCard"
+                    );
                 };
                 input.click();
               }}
               fullWidth
             >
-              {exam.isUploaded ? "Rank Card Uploaded" : "Upload Rank Card"}
+              {exam.isUploaded ? (
+                loading.higherStudy ? (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: 32, // Match the height of other elements
+                      width: 32, // Optional: Keep it consistent
+                    }}
+                  >
+                    <CircularProgress size={20} color={"default"} />{" "}
+                    {/* Adjust size to fit */}
+                  </Box>
+                ) : (
+                  "Uploaded"
+                )
+              ) : (
+                "Upload Rank Card"
+              )}
             </Button>
           </Grid>
           <Grid item xs={12}>
@@ -529,7 +631,9 @@ export default function ProgressionForm({ formData, handleChange }) {
             fullWidth
             label="Examination Name"
             value={exam.examinationName || ""}
-            onChange={(e) => handleExamChange(index, "examinationName", e.target.value)}
+            onChange={(e) =>
+              handleExamChange(index, "examinationName", e.target.value)
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6} md={2}>
@@ -564,7 +668,9 @@ export default function ProgressionForm({ formData, handleChange }) {
             fullWidth
             label="Percentile"
             value={exam.percentile || ""}
-            onChange={(e) => handleExamChange(index, "percentile", e.target.value)}
+            onChange={(e) =>
+              handleExamChange(index, "percentile", e.target.value)
+            }
             type="number"
           />
         </Grid>
@@ -586,7 +692,9 @@ export default function ProgressionForm({ formData, handleChange }) {
                 <InputLabel>Training Mode</InputLabel>
                 <Select
                   value={exam.trainingMode || ""}
-                  onChange={(e) => handleExamChange(index, "trainingMode", e.target.value)}
+                  onChange={(e) =>
+                    handleExamChange(index, "trainingMode", e.target.value)
+                  }
                   label="Training Mode"
                 >
                   <MenuItem value="In-House">In-house</MenuItem>
@@ -599,7 +707,9 @@ export default function ProgressionForm({ formData, handleChange }) {
                 <InputLabel>Training Type</InputLabel>
                 <Select
                   value={exam.trainingType || ""}
-                  onChange={(e) => handleExamChange(index, "trainingType", e.target.value)}
+                  onChange={(e) =>
+                    handleExamChange(index, "trainingType", e.target.value)
+                  }
                   label="Training Type"
                 >
                   <MenuItem value="Paid">Paid</MenuItem>
@@ -618,13 +728,33 @@ export default function ProgressionForm({ formData, handleChange }) {
               input.accept = ".pdf,.jpg,.png";
               input.onchange = (e) => {
                 const file = e.target.files[0];
-                if (file) handleFileUpload(file, index, "competitiveExam", "rankCard");
+                if (file)
+                  handleFileUpload(file, index, "competitiveExam", "rankCard");
               };
               input.click();
             }}
             fullWidth
           >
-            {exam.isUploaded ? "Rank Card Uploaded" : "Upload Rank Card"}
+            {exam.isUploaded ? (
+              loading.competitiveExam ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: 32, // Match the height of other elements
+                    width: 32, // Optional: Keep it consistent
+                  }}
+                >
+                  <CircularProgress size={20} color={"default"} />{" "}
+                  {/* Adjust size to fit */}
+                </Box>
+              ) : (
+                "Uploaded"
+              )
+            ) : (
+              "Upload Rank Card"
+            )}
           </Button>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
@@ -712,7 +842,9 @@ export default function ProgressionForm({ formData, handleChange }) {
         </Typography>
 
         {formData.competitiveExam?.map((exam, index) =>
-          isMobile ? renderExamMobile(exam, index) : renderExamDesktop(exam, index)
+          isMobile
+            ? renderExamMobile(exam, index)
+            : renderExamDesktop(exam, index)
         )}
 
         <Button
@@ -789,12 +921,32 @@ export default function ProgressionForm({ formData, handleChange }) {
                 input.accept = ".pdf,.jpg,.png";
                 input.onchange = (e) => {
                   const file = e.target.files[0];
-                  if (file) handleFileUpload(file, null, "higherStudy", "letter");
+                  if (file)
+                    handleFileUpload(file, null, "higherStudy", "letter");
                 };
                 input.click();
               }}
             >
-              {formData.higherStudy?.letter ? "Offer Letter Uploaded" : "Upload Offer Letter"}
+              {formData.higherStudy?.letter ? (
+                loading.higherStudy ? (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: 32, // Match the height of other elements
+                      width: 32, // Optional: Keep it consistent
+                    }}
+                  >
+                    <CircularProgress size={20} color={"default"} />{" "}
+                    {/* Adjust size to fit */}
+                  </Box>
+                ) : (
+                  "Offer Letter Uploaded"
+                )
+              ) : (
+                "Upload Offer Letter"
+              )}
             </Button>
           </Grid>
         </Grid>
@@ -855,7 +1007,9 @@ export default function ProgressionForm({ formData, handleChange }) {
                   fullWidth
                   label="Is there any support from the University"
                   value={formData.startup?.support || ""}
-                  onChange={(e) => handleStartupChange("support", e.target.value)}
+                  onChange={(e) =>
+                    handleStartupChange("support", e.target.value)
+                  }
                   multiline
                   rows={2}
                 />
