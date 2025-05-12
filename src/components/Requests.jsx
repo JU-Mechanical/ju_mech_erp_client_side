@@ -31,11 +31,14 @@ const Requests = () => {
     const getreqs = async () => {
       const data = { user_id: user._id };
       console.log(data);
-      const response = await fetch("http://localhost:5000/users/getreqs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        "https://jumechserver.onrender.com/users/getreqs",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }
+      );
       console.log(response);
       const returneddata = await response.json();
       console.log(returneddata);
@@ -50,11 +53,14 @@ const Requests = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/users/createreq", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "https://jumechserver.onrender.com/users/createreq",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
       const data = await response.json();
       console.log(data);
       const newreqs = [requests, data];

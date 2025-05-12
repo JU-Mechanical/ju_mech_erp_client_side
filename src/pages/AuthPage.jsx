@@ -50,8 +50,8 @@ const AuthPage = ({ fetchUserProfile }) => {
     try {
       const response = await fetch(
         isLogin
-          ? `http://localhost:5000/users/login`
-          : `http://localhost:5000/users/signup`,
+          ? `https://jumechserver.onrender.com/users/login`
+          : `https://jumechserver.onrender.com/users/signup`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -62,17 +62,14 @@ const AuthPage = ({ fetchUserProfile }) => {
       const returneddata = await response.json();
       console.log(returneddata);
       dispatch(
-          setLogin({ user: returneddata.user, token: returneddata.token })
-        );
-       
-        navigate(`/updateform/${returneddata.user.name}`); // Redirect to update form
-       
-      
+        setLogin({ user: returneddata.user, token: returneddata.token })
+      );
+
+      navigate(`/updateform/${returneddata.user.name}`); // Redirect to update form
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
-
 
   return (
     <Container

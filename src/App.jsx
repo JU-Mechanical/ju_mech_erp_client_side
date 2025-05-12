@@ -69,7 +69,7 @@ function App() {
   const fetchUserProfile = async (token) => {
     try {
       const response = await fetch(
-        "http://localhost:5000/users/creds-primary",
+        "https://jumechserver.onrender.com/users/creds-primary",
         {
           method: "GET",
           headers: {
@@ -81,7 +81,6 @@ function App() {
       const data = await response.json();
       if (response.ok) {
         dispatch(setLogin({ user: data.user, token }));
-        
       } else {
         console.error("Error fetching user profile:", data.message);
       }
