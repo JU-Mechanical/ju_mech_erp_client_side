@@ -8,6 +8,7 @@ import {
   Divider,
   useMediaQuery,
   Snackbar,
+  Alert, // Add this import
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresence
 import GoogleIcon from "@mui/icons-material/Google";
@@ -47,6 +48,18 @@ const AuthPage = ({ fetchUserProfile }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate roll number length
+    if (!isLogin && formData.rollNumber.length !== 12) {
+      setAlert({
+        show: true,
+        type: "error",
+        title: "Invalid Roll Number",
+        message: "Roll number must be exactly 12 digits.",
+      });
+      return;
+    }
+
     try {
       const response = await fetch(
         isLogin
@@ -60,7 +73,40 @@ const AuthPage = ({ fetchUserProfile }) => {
       );
 
       const returneddata = await response.json();
-      console.log(returneddata);
+
+      if (!response.ok) {
+        if (returneddata.message.includes("email")) {
+          setAlert({
+            show: true,
+            type: "error",
+            title: "Duplicate Email",
+            message: "This email is already registered.",
+          });
+        } else if (returneddata.message.includes("mobileNo")) {
+          setAlert({
+            show: true,
+            type: "error",
+            title: "Duplicate Phone Number",
+            message: "This phone number is already registered.",
+          });
+        } else if (returneddata.message.includes("rollNumber")) {
+          setAlert({
+            show: true,
+            type: "error",
+            title: "Duplicate Roll Number",
+            message: "This roll number is already registered.",
+          });
+        } else {
+          setAlert({
+            show: true,
+            type: "error",
+            title: "Error",
+            message: returneddata.message || "An error occurred.",
+          });
+        }
+        return;
+      }
+
       dispatch(
         setLogin({ user: returneddata.user, token: returneddata.token })
       );
@@ -68,6 +114,12 @@ const AuthPage = ({ fetchUserProfile }) => {
       navigate(`/updateform/${returneddata.user.name}`); // Redirect to update form
     } catch (error) {
       console.log(error);
+      setAlert({
+        show: true,
+        type: "error",
+        title: "Error",
+        message: "An unexpected error occurred. Please try again.",
+      });
     }
   };
 
@@ -313,6 +365,20 @@ const AuthPage = ({ fetchUserProfile }) => {
           </motion.div>
         </AnimatePresence>
       </motion.div>
+
+      <Snackbar
+        open={alert.show}
+        autoHideDuration={3000}
+        onClose={() => setAlert({ ...alert, show: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setAlert({ ...alert, show: false })}
+          severity={alert.type}
+        >
+          {alert.title}: {alert.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
