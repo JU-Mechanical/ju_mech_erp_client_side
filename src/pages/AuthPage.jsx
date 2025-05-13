@@ -8,14 +8,17 @@ import {
   Divider,
   useMediaQuery,
   Snackbar,
+  Alert,
+  IconButton, // Add IconButton import
 } from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresence
+import { motion, AnimatePresence } from "framer-motion";
 import GoogleIcon from "@mui/icons-material/Google";
 import JULogo from "../assets/julogo.png";
 import { useDispatch } from "react-redux";
 import { setLogin } from "../state";
 import { useNavigate } from "react-router-dom";
 import AlertNotification from "../components/Alert";
+import { Visibility, VisibilityOff } from "@mui/icons-material"; // Import visibility icons
 
 const PRIMARY_COLOR = "#b70924";
 const WHITE = "#ffffff";
@@ -35,10 +38,15 @@ const AuthPage = ({ fetchUserProfile }) => {
     title: "",
     message: "",
   });
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const isMobile = useMediaQuery("(max-width:600px)");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   //? function to handle change in form data
   const handleChange = (e) => {
@@ -47,11 +55,23 @@ const AuthPage = ({ fetchUserProfile }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate roll number length
+    if (!isLogin && formData.rollNumber.length !== 12) {
+      setAlert({
+        show: true,
+        type: "error",
+        title: "Invalid Roll Number",
+        message: "Roll number must be exactly 12 digits.",
+      });
+      return;
+    }
+
     try {
       const response = await fetch(
         isLogin
-          ? `http://localhost:5000/users/login`
-          : `http://localhost:5000/users/signup`,
+          ? `https://jumechserver.onrender.com/users/login`
+          : `https://jumechserver.onrender.com/users/signup`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -60,7 +80,40 @@ const AuthPage = ({ fetchUserProfile }) => {
       );
 
       const returneddata = await response.json();
-      console.log(returneddata);
+
+      if (!response.ok) {
+        if (returneddata.message.includes("email")) {
+          setAlert({
+            show: true,
+            type: "error",
+            title: "Duplicate Email",
+            message: "This email is already registered.",
+          });
+        } else if (returneddata.message.includes("mobileNo")) {
+          setAlert({
+            show: true,
+            type: "error",
+            title: "Duplicate Phone Number",
+            message: "This phone number is already registered.",
+          });
+        } else if (returneddata.message.includes("rollNumber")) {
+          setAlert({
+            show: true,
+            type: "error",
+            title: "Duplicate Roll Number",
+            message: "This roll number is already registered.",
+          });
+        } else {
+          setAlert({
+            show: true,
+            type: "error",
+            title: "Error",
+            message: returneddata.message || "An error occurred.",
+          });
+        }
+        return;
+      }
+
       dispatch(
         setLogin({ user: returneddata.user, token: returneddata.token })
       );
@@ -68,6 +121,12 @@ const AuthPage = ({ fetchUserProfile }) => {
       navigate(`/updateform/${returneddata.user.name}`); // Redirect to update form
     } catch (error) {
       console.log(error);
+      setAlert({
+        show: true,
+        type: "error",
+        title: "Error",
+        message: "An unexpected error occurred. Please try again.",
+      });
     }
   };
 
@@ -221,7 +280,7 @@ const AuthPage = ({ fetchUserProfile }) => {
 
                 <TextField
                   label="Password"
-                  type="password"
+                  type={showPassword ? "text" : "password"} // Toggle between text and password
                   variant="outlined"
                   fullWidth
                   name="password"
@@ -232,6 +291,13 @@ const AuthPage = ({ fetchUserProfile }) => {
                     bgcolor: "#f9f9f9",
                     borderRadius: 2,
                     "& .MuiOutlinedInput-root": { borderRadius: 2 },
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton onClick={togglePasswordVisibility} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    ),
                   }}
                 />
 
@@ -313,6 +379,20 @@ const AuthPage = ({ fetchUserProfile }) => {
           </motion.div>
         </AnimatePresence>
       </motion.div>
+
+      <Snackbar
+        open={alert.show}
+        autoHideDuration={3000}
+        onClose={() => setAlert({ ...alert, show: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setAlert({ ...alert, show: false })}
+          severity={alert.type}
+        >
+          {alert.title}: {alert.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

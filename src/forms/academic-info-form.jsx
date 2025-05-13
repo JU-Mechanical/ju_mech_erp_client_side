@@ -85,6 +85,17 @@ export default function AcademicInfoForm({ formData, handleChange }) {
     }
   };
 
+  const handleAddProfessionalElective = (electiveName) => {
+    if (electiveName && !formData.selectedProfessional.includes(electiveName)) {
+      handleChange({
+        target: {
+          name: "selectedProfessional",
+          value: [...formData.selectedProfessional, electiveName],
+        },
+      });
+    }
+  };
+
   //? Addition of Open elective
   const handleOpenChange = (event) => {
     const newElective = event.target.value;
@@ -95,6 +106,17 @@ export default function AcademicInfoForm({ formData, handleChange }) {
         target: {
           name: "selectedOpen",
           value: [...formData.selectedOpen, newElective], // ✅ Create a new array instead of mutating
+        },
+      });
+    }
+  };
+
+  const handleAddOpenElective = (electiveName) => {
+    if (electiveName && !formData.selectedOpen.includes(electiveName)) {
+      handleChange({
+        target: {
+          name: "selectedOpen",
+          value: [...formData.selectedOpen, electiveName],
         },
       });
     }
@@ -307,41 +329,31 @@ export default function AcademicInfoForm({ formData, handleChange }) {
         </TableContainer>
         <Divider sx={{ my: 4, bgcolor: "rgba(255, 255, 255, 0.3)" }} />
 
-        {/* Selection form for professional electives */}
-        <FormControl
-          fullWidth
-          variant="outlined"
+        {/* Input for Professional Electives */}
+        <Typography
+          variant="h6"
           sx={{
-            mb: 4,
-            borderRadius: 2,
-            backgroundColor: "rgba(255, 255, 255, 0.2)",
-            backdropFilter: "blur(5px)",
+            fontWeight: "bold",
+            mb: 2,
+            background: "linear-gradient(to right, #ff512f, #dd2476)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
           }}
         >
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: "bold",
-              mb: 2,
-              background: "linear-gradient(to right, #ff512f, #dd2476)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            Choose Professional Electives
-          </Typography>
-          <Select
-            onChange={handleProfessionalChange}
-            value=""
-            sx={{ borderRadius: 2 }}
-          >
-            {electivesList.map((elective) => (
-              <MenuItem key={elective} value={elective}>
-                {elective}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          Add Professional Electives
+        </Typography>
+        <TextField
+          fullWidth
+          placeholder="Enter Professional Elective Name"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleAddProfessionalElective(e.target.value);
+              e.target.value = ""; // Clear the input field
+            }
+          }}
+          sx={{ mb: 2 }}
+        />
 
         {/* Display Selected Professional Electives */}
         {formData.selectedProfessional.length > 0 && (
@@ -367,7 +379,7 @@ export default function AcademicInfoForm({ formData, handleChange }) {
 
         <Divider sx={{ my: 4, bgcolor: "rgba(255, 255, 255, 0.3)" }} />
 
-        {/* Selection form for Open Electives */}
+        {/* Input for Open Electives */}
         <Typography
           variant="h6"
           sx={{
@@ -378,27 +390,20 @@ export default function AcademicInfoForm({ formData, handleChange }) {
             WebkitTextFillColor: "transparent",
           }}
         >
-          Choose Open Electives
+          Add Open Electives
         </Typography>
-        <FormControl
+        <TextField
           fullWidth
-          variant="outlined"
-          sx={{
-            mb: 4,
-            borderRadius: 2,
-            backgroundColor: "rgba(255, 255, 255, 0.2)",
-            backdropFilter: "blur(5px)",
+          placeholder="Enter Open Elective Name"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleAddOpenElective(e.target.value);
+              e.target.value = ""; // Clear the input field
+            }
           }}
-        >
-          <InputLabel>Select Open Elective</InputLabel>
-          <Select onChange={handleOpenChange} value="" sx={{ borderRadius: 2 }}>
-            {openElectivesList.map((elective) => (
-              <MenuItem key={elective} value={elective}>
-                {elective}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          sx={{ mb: 2 }}
+        />
 
         {/* Display Selected Open Electives */}
         {formData.selectedOpen.length > 0 && (

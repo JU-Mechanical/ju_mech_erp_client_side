@@ -32,7 +32,7 @@ const Requests = () => {
       const data = { user_id: user._id };
       console.log(data);
       const response = await fetch(
-        "http://localhost:5000/users/getreqs",
+        "https://jumechserver.onrender.com/users/getreqs",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -54,7 +54,7 @@ const Requests = () => {
     e.preventDefault();
     try {
       const response = await fetch(
-        "http://localhost:5000/users/createreq",
+        "https://jumechserver.onrender.com/users/createreq",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
