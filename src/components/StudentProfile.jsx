@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  Card, CardContent, Typography, Grid, Box, Divider, Chip
+  Card, CardContent, Typography, Grid, Box, Divider, Chip,
+  Button
 } from '@mui/material';
+import FilePreviewOverlay from './FilePreview';
 
 // Helper component to render labeled data
 const Field = ({ label, value }) => (
@@ -31,6 +33,8 @@ const StudentProfile = ({ user, onClose }) => {
     curricularInfo, careerProgression, miscellaneous
   } = user;
 
+  const [showfile,setshowfile]=useState(null);
+
   return (
     <Box p={3}>
         <Typography onClick={()=>{onClose();}} sx={{cursor:'pointer'}}>Back</Typography>
@@ -44,21 +48,21 @@ const StudentProfile = ({ user, onClose }) => {
 
       {/* Personal Info */}
       <Section title="Personal Information">
-        {Object.entries(personalInfo || {}).map(([key, val]) => (
+        {Object.entries(personalInfo || {}).filter(([key]) => key !== '_id').map(([key, val]) => (
           <Field key={key} label={key} value={val} />
         ))}
       </Section>
 
       {/* Enrollment Details */}
       <Section title="Enrollment Details">
-        {Object.entries(enrollmentDetails || {}).map(([key, val]) => (
+        {Object.entries(enrollmentDetails || {}).filter(([key]) => key !== '_id').map(([key, val]) => (
           <Field key={key} label={key} value={val} />
         ))}
       </Section>
 
       {/* Academic Background */}
       <Section title="Academic Background">
-        {Object.entries(academicBackground || {}).map(([key, val]) => (
+        {Object.entries(academicBackground || {}).filter(([key]) => key !== '_id').map(([key, val]) => (
           <Field key={key} label={key} value={val} />
         ))}
       </Section>
@@ -69,9 +73,136 @@ const StudentProfile = ({ user, onClose }) => {
           <Box key={i} sx={{ mb: 2 }}>
             <Typography variant="subtitle1">Semester {grade.semester}</Typography>
             <Field label="SGPA" value={grade.sgpa} />
-            <Field label="CGPA" value={grade.cgpa} />
+           <Button variant="outlined" onClick={() => setshowfile(grade.gradecard)}>
+  View Gradecard
+</Button>
           </Box>
         ))}
+        {/* Projects */}
+{(academicInfo?.projects || []).map((proj, i) => (
+  <Card variant="outlined" sx={{ my: 2, p: 2 }} key={i}>
+    <Typography variant="subtitle1">Project {i + 1}</Typography>
+    {Object.entries(proj)
+      .filter(([key]) => key !== '_id' && key !== 'certificate' && key !== 'projects')
+      .map(([k, v]) => (
+        <Field key={k} label={k} value={v} />
+      ))}
+    {proj.certificate && (
+      <Button variant="outlined" onClick={() => setshowfile(proj.certificate)}>
+        View Certificate
+      </Button>
+    )}
+  </Card>
+))}
+
+{/* Courses */}
+{(academicInfo?.courses || []).map((course, i) => (
+  <Card variant="outlined" sx={{ my: 2, p: 2 }} key={i}>
+    <Typography variant="subtitle1">Course {i + 1}</Typography>
+    {Object.entries(course)
+      .filter(([key]) => key !== '_id' && key !== 'certificate' && key !== 'gradeCard')
+      .map(([k, v]) => (
+        <Field key={k} label={k} value={v?.toString()} />
+      ))}
+    {course.gradeCard && (
+      <Button variant="outlined" onClick={() => setshowfile(course.gradeCard)}>
+        View Gradecard
+      </Button>
+    )}
+    {course.certificate && (
+      <Button variant="outlined" onClick={() => setshowfile(course.certificate)}>
+        View Certificate
+      </Button>
+    )}
+  </Card>
+))}
+
+{/* Trainings */}
+{(academicInfo?.trainings || []).map((training, i) => (
+  <Card variant="outlined" sx={{ my: 2, p: 2 }} key={i}>
+    <Typography variant="subtitle1">Training {i + 1}</Typography>
+    {Object.entries(training)
+      .filter(([key]) => key !== '_id' && key !== 'certificate')
+      .map(([k, v]) => (
+        <Field key={k} label={k} value={v?.toString()} />
+      ))}
+    {training.certificate && (
+      <Button variant="outlined" onClick={() => setshowfile(training.certificate)}>
+        View Certificate
+      </Button>
+    )}
+  </Card>
+))}
+
+{/* Internships */}
+{(academicInfo?.interns || []).map((intern, i) => (
+  <Card variant="outlined" sx={{ my: 2, p: 2 }} key={i}>
+    <Typography variant="subtitle1">Internship {i + 1}</Typography>
+    {Object.entries(intern)
+      .filter(([key]) => key !== '_id' && key !== 'certificate')
+      .map(([k, v]) => (
+        <Field key={k} label={k} value={v?.toString()} />
+      ))}
+    {intern.certificate && (
+      <Button variant="outlined" onClick={() => setshowfile(intern.certificate)}>
+        View Certificate
+      </Button>
+    )}
+  </Card>
+))}
+
+{/* Publications */}
+{academicInfo?.publications?.journalPapers?.map((paper, i) => (
+  <Card variant="outlined" sx={{ my: 2, p: 2 }} key={`journal-${i}`}>
+    <Typography variant="subtitle1">Journal Paper {i + 1}</Typography>
+    {Object.entries(paper)
+      .filter(([key]) => key !== '_id')
+      .map(([k, v]) => (
+        <Field key={k} label={k} value={v} />
+      ))}
+  </Card>
+))}
+
+{academicInfo?.publications?.conferencePapers?.map((paper, i) => (
+  <Card variant="outlined" sx={{ my: 2, p: 2 }} key={`conf-${i}`}>
+    <Typography variant="subtitle1">Conference Paper {i + 1}</Typography>
+    {Object.entries(paper)
+      .filter(([key]) => key !== '_id')
+      .map(([k, v]) => (
+        <Field key={k} label={k} value={v} />
+      ))}
+  </Card>
+))}
+
+{academicInfo?.publications?.patent?.map((pat, i) => (
+  <Card variant="outlined" sx={{ my: 2, p: 2 }} key={`patent-${i}`}>
+    <Typography variant="subtitle1">Patent {i + 1}</Typography>
+    {Object.entries(pat)
+      .filter(([key]) => key !== '_id' && key !== 'certificate')
+      .map(([k, v]) => (
+        <Field key={k} label={k} value={v} />
+      ))}
+    {pat.certificate && (
+      <Button variant="outlined" onClick={() => setshowfile(pat.certificate)}>
+        View Certificate
+      </Button>
+    )}
+  </Card>
+))}
+
+{/* Remedial */}
+{(academicInfo?.remedial || []).map((item, i) => (
+  <Card variant="outlined" sx={{ my: 2, p: 2 }} key={`remedial-${i}`}>
+    <Typography variant="subtitle1">Remedial {i + 1}</Typography>
+    {Object.entries(item)
+      .filter(([key]) => key !== '_id')
+      .map(([k, v]) => (
+        <Field key={k} label={k} value={v?.toString()} />
+      ))}
+  </Card>
+))}
+
+        <FilePreviewOverlay file={showfile} onClose={()=>{setshowfile(null)}}/>
         {/* Additional sections like projects, courses, etc., can be mapped similarly */}
       </Section>
 
@@ -82,9 +213,13 @@ const StudentProfile = ({ user, onClose }) => {
             <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>{cat}</Typography>
             {(curricularInfo?.[cat] || []).map((item, idx) => (
               <Card variant="outlined" sx={{ my: 1, p: 1 }} key={idx}>
-                {Object.entries(item).map(([k, v]) => (
+                {Object.entries(item).filter(([key]) => key !== '_id').filter(([key]) => key !== 'certificate').map(([k, v]) => (
                   <Field key={k} label={k} value={Array.isArray(v) ? v.join(', ') : v} />
+                  
                 ))}
+                 {item.certificate &&(<Button variant="outlined" onClick={() => setshowfile(item.certificate)}>
+  View Certificate
+</Button>)}
               </Card>
             ))}
           </Box>
@@ -96,31 +231,42 @@ const StudentProfile = ({ user, onClose }) => {
         {(careerProgression?.placement || []).map((offer, i) => (
           <Box key={i} sx={{ mb: 2 }}>
             <Typography variant="subtitle1">Offer {i + 1}</Typography>
-            {Object.entries(offer).map(([key, value]) => (
-              <Field key={key} label={key} value={value} />
-            ))}
+           {Object.entries(offer)
+  .filter(([key]) => key !== 'offerLetter').filter(([key]) => key !== '_id')
+  .map(([key, value]) => (
+    <Field key={key} label={key} value={value} />
+))}
+             <Button variant="outlined" onClick={() => setshowfile(offer.offerLetter)}>
+  View Offer Letter
+</Button>
           </Box>
         ))}
         {(careerProgression?.exams || []).map((exam, i) => (
           <Box key={i} sx={{ mb: 2 }}>
             <Typography variant="subtitle1">Exam {i + 1}</Typography>
-            {Object.entries(exam).map(([key, value]) => (
+            {Object.entries(exam).filter(([key]) => key !== 'rankCard').filter(([key]) => key !== '_id').map(([key, value]) => (
               <Field key={key} label={key} value={value} />
             ))}
+             <Button variant="outlined" onClick={() => setshowfile(exam.rankCard)}>
+  View Rank Card
+</Button>
           </Box>
         ))}
         {careerProgression?.higherStudy && (
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1">Higher Studies</Typography>
-            {Object.entries(careerProgression.higherStudy).map(([k, v]) => (
+            {Object.entries(careerProgression.higherStudy).filter(([key]) => key !== '_id').filter(([key]) => key !== 'letter').map(([k, v]) => (
               <Field key={k} label={k} value={v} />
             ))}
+            <Button variant="outlined" onClick={() => setshowfile(careerProgression.higherStudy.letter)}>
+  View Acceptance Letter
+</Button>
           </Box>
         )}
         {careerProgression?.startup && (
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1">Startup</Typography>
-            {Object.entries(careerProgression.startup).map(([k, v]) => (
+            {Object.entries(careerProgression.startup).filter(([key]) => key !== '_id').map(([k, v]) => (
               <Field key={k} label={k} value={v} />
             ))}
           </Box>
@@ -129,9 +275,12 @@ const StudentProfile = ({ user, onClose }) => {
 
       {/* Miscellaneous */}
       <Section title="Miscellaneous">
-        {Object.entries(miscellaneous || {}).map(([key, val]) => (
+        {Object.entries(miscellaneous || {}).filter(([key]) => key !== '_id').filter(([key]) => key !== 'lor').map(([key, val]) => (
           <Field key={key} label={key} value={val} />
         ))}
+         <Button variant="outlined" onClick={() => setshowfile(miscellaneous.lor)}>
+  View LOR
+</Button>
       </Section>
     </Box>
   );

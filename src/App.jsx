@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { use, useEffect } from "react";
 import { setLogout } from "./state";
 import { setLogin } from "./state";
+import PromptForKey from "./components/PromptKey";
 
 //* Create a Custom Theme
 const theme = createTheme({
@@ -47,6 +48,22 @@ const theme = createTheme({
   },
 });
 
+const ADMIN_KEY = import.meta.env.VITE_ADMIN_ACCESS_KEY;
+
+const PrivateRoute = ({ children }) => {
+  const keyMatch = localStorage.getItem('adminKey') === ADMIN_KEY;
+  useEffect(() => {
+    return () => {
+      // Clear the key ONLY if user is leaving the admin route
+      if (location.pathname === '/admin') {
+        localStorage.removeItem('adminKey');
+      }
+    };
+  }, [location.pathname]);
+  if (keyMatch) return children;
+  return <PromptForKey />;
+};
+
 function App() {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -69,7 +86,7 @@ function App() {
   const fetchUserProfile = async (token) => {
     try {
       const response = await fetch(
-        "https://jumechserver.onrender.com/users/creds-primary",
+        "http://localhost:5000/users/creds-primary",
         {
           method: "GET",
           headers: {
@@ -107,7 +124,7 @@ function App() {
             path="/dashboard"
             element={user ? <DashboardPage /> : <AuthPage />}
           />
-          <Route path="/admin" element={<AdminPortal />} />
+          <Route path="/admin" element={<PrivateRoute><AdminPortal /></PrivateRoute>} />
           <Route path="/notices" element={<NoticePage />} />
           <Route path="/faculty" element={<FacultyPage />} />
           <Route path="/events" element={<EventsPage />} />

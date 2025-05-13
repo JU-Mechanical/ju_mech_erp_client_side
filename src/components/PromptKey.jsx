@@ -1,78 +1,38 @@
-import React, { useState } from "react";
-import {
-  TextField,
-  Button,
-  Typography,
-  Container,
-  Paper,
-  Divider,
-  useMediaQuery,
-  Snackbar,
-} from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresence
-import GoogleIcon from "@mui/icons-material/Google";
+import { Button, Container, Divider, Paper, TextField, Typography, useMediaQuery } from '@mui/material';
+import { motion,AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
 import JULogo from "../assets/julogo.png";
-import { useDispatch } from "react-redux";
-import { setLogin } from "../state";
-import { useNavigate } from "react-router-dom";
-import AlertNotification from "../components/Alert";
+const PromptForKey = () => {
+  const [inputKey, setInputKey] = useState('');
+  const [error, setError] = useState('');
 
-const PRIMARY_COLOR = "#b70924";
-const WHITE = "#ffffff";
-
-const AuthPage = ({ fetchUserProfile }) => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({
-    fullName: "",
-    mobileNo: "",
-    email: "",
-    rollNumber: "",
-    password: "",
-  });
-  const [alert, setAlert] = useState({
-    show: false,
-    type: "",
-    title: "",
-    message: "",
-  });
-  const isMobile = useMediaQuery("(max-width:600px)");
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  //? function to handle change in form data
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch(
-        isLogin
-          ? `http://localhost:5000/users/login`
-          : `http://localhost:5000/users/signup`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
-
-      const returneddata = await response.json();
-      console.log(returneddata);
-      dispatch(
-        setLogin({ user: returneddata.user, token: returneddata.token })
-      );
-
-      navigate(`/updateform/${returneddata.user.name}`); // Redirect to update form
-    } catch (error) {
-      console.log(error);
+    const correctKey = import.meta.env.VITE_ADMIN_ACCESS_KEY;
+  
+    if (inputKey === correctKey) {
+      localStorage.setItem('adminKey', inputKey);
+    window.location.reload(); // triggers route to Admin
+    } else {
+      setError('Invalid Key');
     }
   };
 
+   const isMobile = useMediaQuery("(max-width:600px)");
+  const PRIMARY_COLOR = "#b70924";
+const WHITE = "#ffffff";
+
   return (
-    <Container
+    // <div style={{ padding: 40 }}>
+    //   <h2>Enter Admin Access Key</h2>
+    //   <input
+    //     type="password"
+     
+    //   />
+    //   <button onClick={handleSubmit}>Submit</button>
+    //   {error && <p style={{ color: 'red' }}>{error}</p>}
+    // </div>
+     <Container
       sx={{
         minHeight: "100vh",
         width: "100vw",
@@ -115,7 +75,7 @@ const AuthPage = ({ fetchUserProfile }) => {
       >
         <AnimatePresence mode="wait">
           <motion.div
-            key={isLogin ? "login" : "signup"}
+            key={"login" }
             initial={{ rotateY: 90, opacity: 0 }}
             animate={{ rotateY: 0, opacity: 1 }}
             exit={{ rotateY: -90, opacity: 0 }}
@@ -146,25 +106,21 @@ const AuthPage = ({ fetchUserProfile }) => {
                   height: !isMobile ? 60 : 40,
                 }}
               />
-              <Typography
-                variant={isMobile ? "h5" : "h4"}
-                fontWeight="bold"
-                color={PRIMARY_COLOR}
-                mb={2}
-              >
-                {isLogin ? "Login to Your Account" : "Create an Account"}
-              </Typography>
+             
 
               <form onSubmit={handleSubmit} style={{ marginTop: 10 }}>
-                {!isLogin && (
+            
                   <>
                     <TextField
-                      label="Full Name"
+                     
                       variant="outlined"
                       fullWidth
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleChange}
+                      
+                      type="password"
+                        label="Access Key"
+     value={inputKey}
+     onChange={(e) => setInputKey(e.target.value)}
+                     
                       margin="dense"
                       sx={{
                         bgcolor: "#f9f9f9",
@@ -172,68 +128,11 @@ const AuthPage = ({ fetchUserProfile }) => {
                         "& .MuiOutlinedInput-root": { borderRadius: 2 },
                       }}
                     />
-                    <TextField
-                      label="Roll Number"
-                      variant="outlined"
-                      fullWidth
-                      name="rollNumber"
-                      value={formData.rollNumber}
-                      onChange={handleChange}
-                      margin="dense"
-                      sx={{
-                        bgcolor: "#f9f9f9",
-                        borderRadius: 2,
-                        "& .MuiOutlinedInput-root": { borderRadius: 2 },
-                      }}
-                    />
-                    <TextField
-                      label="Phone Number"
-                      variant="outlined"
-                      fullWidth
-                      name="mobileNo"
-                      value={formData.mobileNo}
-                      onChange={handleChange}
-                      margin="dense"
-                      sx={{
-                        bgcolor: "#f9f9f9",
-                        borderRadius: 2,
-                        "& .MuiOutlinedInput-root": { borderRadius: 2 },
-                      }}
-                    />
+                   
                   </>
-                )}
+              
 
-                <TextField
-                  label="Email"
-                  type="email"
-                  variant="outlined"
-                  fullWidth
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  margin="dense"
-                  sx={{
-                    bgcolor: "#f9f9f9",
-                    borderRadius: 2,
-                    "& .MuiOutlinedInput-root": { borderRadius: 2 },
-                  }}
-                />
-
-                <TextField
-                  label="Password"
-                  type="password"
-                  variant="outlined"
-                  fullWidth
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  margin="dense"
-                  sx={{
-                    bgcolor: "#f9f9f9",
-                    borderRadius: 2,
-                    "& .MuiOutlinedInput-root": { borderRadius: 2 },
-                  }}
-                />
+               
 
                 <motion.div
                   whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
@@ -252,12 +151,12 @@ const AuthPage = ({ fetchUserProfile }) => {
                       borderRadius: 3,
                     }}
                   >
-                    {isLogin ? "Login" : "Sign Up"}
+                    Login
                   </Button>
                 </motion.div>
               </form>
 
-              <Divider sx={{ my: 3 }} />
+           
 
               <motion.div
                 whileHover={{
@@ -295,20 +194,7 @@ const AuthPage = ({ fetchUserProfile }) => {
                 </Button> */}
               </motion.div>
 
-              <Typography
-                variant="body2"
-                sx={{
-                  mt: 2,
-                  cursor: "pointer",
-                  color: PRIMARY_COLOR,
-                  "&:hover": { textDecoration: "underline" },
-                }}
-                onClick={() => setIsLogin(!isLogin)}
-              >
-                {isLogin
-                  ? "Don't have an account? Sign up"
-                  : "Already have an account? Login"}
-              </Typography>
+             
             </Paper>
           </motion.div>
         </AnimatePresence>
@@ -317,4 +203,4 @@ const AuthPage = ({ fetchUserProfile }) => {
   );
 };
 
-export default AuthPage;
+export default PromptForKey;
