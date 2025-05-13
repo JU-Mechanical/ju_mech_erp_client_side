@@ -16,39 +16,6 @@ import {
 } from "@mui/material";
 
 export default function EnrollmentDetailsForm({ onChange, formData, handleChange}) {
-  // const [formData, setFormData] = useState({
-  //   rollNumber: "",
-  //   section: "",
-  //   programme: "",
-  //   isLateralEntry: false,
-  //   admissionYear: "",
-  //   currentSemester: "",
-  //   currentYear: "",
-  //   expectedGraduationYear: "",
-  //   registrationNumber: "",
-  //   registrationYear: "",
-  //   mentorName: "",
-  //   hasScholarship: false,
-  //   scholarshipDetails: ""
-  // });
-
-  // const handleChange = (event) => {
-  //   const { name, value, checked, type } = event.target;
-  //   const newValue = type === 'checkbox' ? checked : value;
-    
-  //   setFormData({
-  //     ...formData,
-  //     [name]: newValue
-  //   });
-    
-  //   onChange({
-  //     enrollmentDetails: {
-  //       ...formData,
-  //       [name]: newValue
-  //     }
-  //   });
-  // };
-
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
@@ -88,13 +55,9 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
               onChange={handleChange}
               label="Programme"
             >
-              <MenuItem value="btech">B.Tech</MenuItem>
-              <MenuItem value="mtech">M.Tech</MenuItem>
-              <MenuItem value="phd">Ph.D</MenuItem>
-              <MenuItem value="bba">BBA</MenuItem>
-              <MenuItem value="mba">MBA</MenuItem>
-              <MenuItem value="bca">BCA</MenuItem>
-              <MenuItem value="mca">MCA</MenuItem>
+              <MenuItem value="be">BE</MenuItem>
+              <MenuItem value="me">ME</MenuItem>
+              <MenuItem value="phd">PhD</MenuItem>
             </Select>
           </FormControl>
         </Grid>
