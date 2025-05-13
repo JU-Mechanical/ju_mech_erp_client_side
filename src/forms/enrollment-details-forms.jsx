@@ -1,28 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  TextField, 
-  Grid, 
-  Typography, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem, 
-  FormControlLabel, 
-  Checkbox, 
+import {
+  TextField,
+  Grid,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControlLabel,
+  Checkbox,
   Divider,
-  Box
+  Box,
 } from "@mui/material";
 
-export default function EnrollmentDetailsForm({ onChange, formData, handleChange}) {
+export default function EnrollmentDetailsForm({
+  onChange,
+  formData,
+  handleChange,
+}) {
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
         Enrollment Details
       </Typography>
       <Divider className="mb-4" />
-      
+
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <TextField
@@ -34,7 +38,7 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
             onChange={handleChange}
           />
         </Grid>
-        
+
         <Grid item xs={12} md={6}>
           <TextField
             required
@@ -45,7 +49,7 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
             onChange={handleChange}
           />
         </Grid>
-        
+
         <Grid item xs={12} md={6}>
           <FormControl fullWidth required>
             <InputLabel>Programme</InputLabel>
@@ -61,7 +65,7 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
             </Select>
           </FormControl>
         </Grid>
-        
+
         <Grid item xs={12} md={6}>
           <FormControlLabel
             control={
@@ -74,7 +78,7 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
             label="Lateral Entry"
           />
         </Grid>
-        
+
         <Grid item xs={12} md={4}>
           <TextField
             required
@@ -86,7 +90,7 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
             onChange={handleChange}
           />
         </Grid>
-        
+
         <Grid item xs={12} md={4}>
           <TextField
             required
@@ -98,7 +102,7 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
             onChange={handleChange}
           />
         </Grid>
-        
+
         <Grid item xs={12} md={4}>
           <TextField
             required
@@ -110,7 +114,7 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
             onChange={handleChange}
           />
         </Grid>
-        
+
         <Grid item xs={12} md={4}>
           <TextField
             required
@@ -122,7 +126,7 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
             onChange={handleChange}
           />
         </Grid>
-        
+
         <Grid item xs={12} md={4}>
           <TextField
             required
@@ -133,7 +137,7 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
             onChange={handleChange}
           />
         </Grid>
-        
+
         <Grid item xs={12} md={4}>
           <TextField
             required
@@ -145,7 +149,7 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
             onChange={handleChange}
           />
         </Grid>
-        
+
         <Grid item xs={12} md={6}>
           <TextField
             required
@@ -156,7 +160,7 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
             onChange={handleChange}
           />
         </Grid>
-        
+
         <Grid item xs={12} md={6}>
           <FormControlLabel
             control={
@@ -169,7 +173,7 @@ export default function EnrollmentDetailsForm({ onChange, formData, handleChange
             label="Scholarship/Freeship Programme"
           />
         </Grid>
-        
+
         {formData.hasScholarship && (
           <Grid item xs={12}>
             <TextField
