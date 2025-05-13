@@ -115,24 +115,29 @@ export default function CoCurricularForm({ formData, handleChange }) {
   const handleUpload = (index, type) => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = ".pdf,.jpg,.png";
+    input.accept = ".pdf"; // Restrict to PDF files only
     input.onchange = (event) => {
       const file = event.target.files[0];
-      setloading((prev) => ({ ...prev, [type]: true })); // Set loading for the specific type
-      uploadFileToCloudinary(file)
-        .then((url) => {
-          const updatedSection = formData[type].map((row, i) =>
-            i === index ? { ...row, certificate: url } : row
-          );
-          handleChange({ target: { name: type, value: updatedSection } });
-          setSnackbarOpen(true);
-        })
-        .catch((error) => {
-          console.error("File upload failed:", error);
-        })
-        .finally(() => {
-          setloading((prev) => ({ ...prev, [type]: false })); // Reset loading for the specific type
-        });
+      if (file && file.size <= 2 * 1024 * 1024) {
+        // Check file size (2 MB limit)
+        setloading((prev) => ({ ...prev, [type]: true }));
+        uploadFileToCloudinary(file)
+          .then((url) => {
+            const updatedSection = formData[type].map((row, i) =>
+              i === index ? { ...row, certificate: url } : row
+            );
+            handleChange({ target: { name: type, value: updatedSection } });
+            setSnackbarOpen(true);
+          })
+          .catch((error) => {
+            console.error("File upload failed:", error);
+          })
+          .finally(() => {
+            setloading((prev) => ({ ...prev, [type]: false }));
+          });
+      } else {
+        alert("Please upload a PDF file not exceeding 2 MB.");
+      }
     };
     input.click();
   };
@@ -204,6 +209,11 @@ export default function CoCurricularForm({ formData, handleChange }) {
           />
         ) : null
       )}
+
+      <Typography variant="body2" color="textSecondary">
+        Note: Only PDF files are allowed, and the file size must not exceed 2
+        MB.
+      </Typography>
 
       <Snackbar
         open={snackbarOpen}

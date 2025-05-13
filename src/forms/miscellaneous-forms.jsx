@@ -34,15 +34,20 @@ export default function MiscellaneousForm({ formData, handleChange }) {
   function Upload() {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = ".pdf,.jpg,.png"; // allow only specific types (optional)
+    input.accept = ".pdf"; // Restrict to PDF files only
     input.onchange = (event) => {
       const file = event.target.files[0];
-      setloading(true);
-      uploadFileToCloudinary(file).then((url) => {
-        formData.lor = url;
-        setSnackbarOpen(true); // Show success popup
-        setloading(false);
-      });
+      if (file && file.size <= 2 * 1024 * 1024) {
+        // Check file size (2 MB limit)
+        setloading(true);
+        uploadFileToCloudinary(file).then((url) => {
+          formData.lor = url;
+          setSnackbarOpen(true); // Show success popup
+          setloading(false);
+        });
+      } else {
+        alert("Please upload a PDF file not exceeding 2 MB.");
+      }
     };
     input.click();
   }
@@ -95,40 +100,46 @@ export default function MiscellaneousForm({ formData, handleChange }) {
         >
           Letter of Recommendation (LOR)
         </Typography>
-        <Button
-          variant="contained"
-          component="label"
-          sx={{
-            borderRadius: "10px",
-            background: "#b70924",
-            width: isMobile ? "100%" : "40%",
-          }}
-          onClick={() => {
-            Upload();
-          }}
-        >
-          {loading ? (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                height: 32, // Match the height of other elements
-                width: 32, // Optional: Keep it consistent
-              }}
-            >
-              <Loader size={24} color={"default"} />{" "}
-            </Box> // Show loader while uploading
-          ) : !formData.lor ? (
-            <IconButton>
-              <CloudUpload />
-            </IconButton>
-          ) : (
-            <IconButton>
-              <CloudDone />
-            </IconButton>
-          )}
-        </Button>
+        <Box sx={{ width: "100%", mb: 3 }}>
+          <Typography variant="body2" color="textSecondary">
+            Note: Only PDF files are allowed, and the file size must not exceed
+            2 MB.
+          </Typography>
+          <Button
+            variant="contained"
+            component="label"
+            sx={{
+              borderRadius: "10px",
+              background: "#b70924",
+              width: isMobile ? "100%" : "40%",
+            }}
+            onClick={() => {
+              Upload();
+            }}
+          >
+            {loading ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: 32, // Match the height of other elements
+                  width: 32, // Optional: Keep it consistent
+                }}
+              >
+                <Loader size={24} color={"default"} />{" "}
+              </Box> // Show loader while uploading
+            ) : !formData.lor ? (
+              <IconButton>
+                <CloudUpload />
+              </IconButton>
+            ) : (
+              <IconButton>
+                <CloudDone />
+              </IconButton>
+            )}
+          </Button>
+        </Box>
       </Box>
 
       {/* Key Learnings */}
