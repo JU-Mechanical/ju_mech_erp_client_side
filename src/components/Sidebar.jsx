@@ -11,7 +11,7 @@ const Sidebar = ({ activeSection, setActiveSection, profileAvatar }) => {
     "Academic Info",
     "Placement",
     "Co-Curricular and Extra-Curricular Activities",
-    "Miscallaneous",
+    "Miscellaneousneous",
   ];
 
   return (
