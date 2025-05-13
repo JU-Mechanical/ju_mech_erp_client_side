@@ -8,15 +8,17 @@ import {
   Divider,
   useMediaQuery,
   Snackbar,
-  Alert, // Add this import
+  Alert,
+  IconButton, // Add IconButton import
 } from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresence
+import { motion, AnimatePresence } from "framer-motion";
 import GoogleIcon from "@mui/icons-material/Google";
 import JULogo from "../assets/julogo.png";
 import { useDispatch } from "react-redux";
 import { setLogin } from "../state";
 import { useNavigate } from "react-router-dom";
 import AlertNotification from "../components/Alert";
+import { Visibility, VisibilityOff } from "@mui/icons-material"; // Import visibility icons
 
 const PRIMARY_COLOR = "#b70924";
 const WHITE = "#ffffff";
@@ -36,10 +38,15 @@ const AuthPage = ({ fetchUserProfile }) => {
     title: "",
     message: "",
   });
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const isMobile = useMediaQuery("(max-width:600px)");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   //? function to handle change in form data
   const handleChange = (e) => {
@@ -273,7 +280,7 @@ const AuthPage = ({ fetchUserProfile }) => {
 
                 <TextField
                   label="Password"
-                  type="password"
+                  type={showPassword ? "text" : "password"} // Toggle between text and password
                   variant="outlined"
                   fullWidth
                   name="password"
@@ -284,6 +291,13 @@ const AuthPage = ({ fetchUserProfile }) => {
                     bgcolor: "#f9f9f9",
                     borderRadius: 2,
                     "& .MuiOutlinedInput-root": { borderRadius: 2 },
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton onClick={togglePasswordVisibility} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    ),
                   }}
                 />
 
