@@ -8,26 +8,26 @@ import SettingsIcon from "@mui/icons-material/Settings"; // Settings icon
 export default function AdminsPanel({ admin, setActiveComponent }) {
   // Define admin options as an array of objects
   const adminOptions = [
-    {
-      label: "Check Admin Details",
-      icon: <GroupIcon />,
-      onClick: () => setActiveComponent("AdminDetails"), // Activate AdminDetails component
-    },
-    {
-      label: "Manage Student Profiles",
-      icon: <GroupIcon />,
-      onClick: () => setActiveComponent("ManageProfiles"), // Activate ManageProfiles component
-    },
-    {
-      label: "Pending Requests",
-      icon: <AssessmentIcon />,
-      onClick: () => setActiveComponent("PendingRequests"), // Activate PendingRequests component
-    },
-    {
-      label: "Configure Settings",
-      icon: <SettingsIcon />,
-      onClick: () => setActiveComponent("Settings"), // Activate Settings component
-    },
+    // {
+    //   label: "Check Admin Details",
+    //   icon: <GroupIcon />,
+    //   onClick: () => setActiveComponent("AdminDetails"), // Activate AdminDetails component
+    // },
+    // {
+    //   label: "Manage Student Profiles",
+    //   icon: <GroupIcon />,
+    //   onClick: () => setActiveComponent("ManageProfiles"), // Activate ManageProfiles component
+    // },
+    // {
+    //   label: "Pending Requests",
+    //   icon: <AssessmentIcon />,
+    //   onClick: () => setActiveComponent("PendingRequests"), // Activate PendingRequests component
+    // },
+    // {
+    //   label: "Configure Settings",
+    //   icon: <SettingsIcon />,
+    //   onClick: () => setActiveComponent("Settings"), // Activate Settings component
+    // },
   ];
 
   return (
@@ -58,9 +58,9 @@ export default function AdminsPanel({ admin, setActiveComponent }) {
       />
 
       {/* Admin Details */}
-      <Typography variant="h5" component="h2" gutterBottom>
+      {/* <Typography variant="h5" component="h2" gutterBottom>
         {admin.fullName}
-      </Typography>
+      </Typography> */}
 
       {/* Admin Options */}
       <Box
@@ -102,7 +102,7 @@ export default function AdminsPanel({ admin, setActiveComponent }) {
       </Box>
 
       {/* Edit Admin Details Button */}
-      <Button
+      {/* <Button
         variant="outlined"
         color="white"
         startIcon={<EditIcon />} // Add the Edit icon here
@@ -117,7 +117,7 @@ export default function AdminsPanel({ admin, setActiveComponent }) {
         onClick={() => setActiveComponent("EditProfile")} // Activate EditProfile component
       >
         Edit Admin Profile
-      </Button>
+      </Button> */}
     </Box>
   );
 }
