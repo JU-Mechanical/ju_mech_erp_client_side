@@ -117,7 +117,7 @@ function App() {
           />
           <Route
             path="/updateform/:username"
-            element={<StudentPortfolio fetchUserProfile={fetchUserProfile} />}
+            element={user?(<StudentPortfolio fetchUserProfile={fetchUserProfile} />):(<Navigate to="/" />)}
           />
           <Route path="/profile/:username" element={<UserProfile />} />
           <Route
