@@ -78,69 +78,8 @@ export default function MiscellaneousForm({ formData, handleChange }) {
         padding: isMobile ? "20px" : "40px",
       }}
     >
-      {/* LOR Upload */}
-      <Box
-        sx={{
-          width: "100%",
-          mb: 3,
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          alignItems: isMobile ? "flex-start" : "center",
-          justifyContent: isMobile ? "flex-start" : "space-between",
-          gap: isMobile ? "10px" : "0",
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            mb: isMobile ? 2 : 4,
-            textAlign: isMobile ? "center" : "left",
-            color: "black",
-          }}
-        >
-          Letter of Recommendation (LOR)
-        </Typography>
-        <Box sx={{ width: "100%", mb: 3 }}>
-          <Typography variant="body2" color="textSecondary">
-            Note: Only PDF files are allowed, and the file size must not exceed
-            2 MB.
-          </Typography>
-          <Button
-            variant="contained"
-            component="label"
-            sx={{
-              borderRadius: "10px",
-              background: "#b70924",
-              width: isMobile ? "100%" : "40%",
-            }}
-            onClick={() => {
-              Upload();
-            }}
-          >
-            {loading ? (
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: 32, // Match the height of other elements
-                  width: 32, // Optional: Keep it consistent
-                }}
-              >
-                <Loader size={24} color={"default"} />{" "}
-              </Box> // Show loader while uploading
-            ) : !formData.lor ? (
-              <IconButton>
-                <CloudUpload />
-              </IconButton>
-            ) : (
-              <IconButton>
-                <CloudDone />
-              </IconButton>
-            )}
-          </Button>
-        </Box>
-      </Box>
+     
+        
 
       {/* Key Learnings */}
       <TextField

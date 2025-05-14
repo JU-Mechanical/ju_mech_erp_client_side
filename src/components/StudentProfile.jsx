@@ -4,7 +4,7 @@ import {
   Button
 } from '@mui/material';
 import FilePreviewOverlay from './FilePreview';
-
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 // Helper component to render labeled data
 const Field = ({ label, value }) => (
   <Grid container spacing={1} sx={{ mb: 1 }}>
@@ -37,7 +37,21 @@ const StudentProfile = ({ user, onClose }) => {
 
   return (
     <Box p={3}>
-        <Typography onClick={()=>{onClose();}} sx={{cursor:'pointer'}}>Back</Typography>
+        <Button
+  variant="text" 
+  onClick={onClose}
+   startIcon={<ArrowBackIcon />}  
+  sx={{
+    textTransform: 'none',
+    fontWeight: 'medium',
+    color: 'text.primary',
+    '&:hover': {
+      backgroundColor: 'action.hover',
+    },
+  }}
+>
+  Back
+</Button>
       {/* Basic Info */}
       <Section title="Basic Information">
         <Field label="Name" value={name} />
@@ -278,9 +292,7 @@ const StudentProfile = ({ user, onClose }) => {
         {Object.entries(miscellaneous || {}).filter(([key]) => key !== '_id').filter(([key]) => key !== 'lor').map(([key, val]) => (
           <Field key={key} label={key} value={val} />
         ))}
-         <Button variant="outlined" onClick={() => setshowfile(miscellaneous.lor)}>
-  View LOR
-</Button>
+        
       </Section>
     </Box>
   );

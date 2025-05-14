@@ -297,7 +297,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
 
   //* state to control misc form details
   const [miscformData, setMiscFormData] = useState({
-    lor: null,
+   
     keyLearnings: "",
     sop: "",
     vision: "",
@@ -392,7 +392,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
       },
       curricularInfo: curricularformData,
       miscellaneous: {
-        lor: miscformData.lor,
+        
         keyLearnings: miscformData.keyLearnings,
         sop: miscformData.sop,
         vision: miscformData.vision,
