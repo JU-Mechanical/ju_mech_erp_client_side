@@ -9,7 +9,8 @@ import {
   useMediaQuery,
   Snackbar,
   Alert,
-  IconButton, // Add IconButton import
+  IconButton,
+  CircularProgress, // Add IconButton import
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import GoogleIcon from "@mui/icons-material/Google";
@@ -25,6 +26,7 @@ const WHITE = "#ffffff";
 
 const AuthPage = ({ fetchUserProfile }) => {
   const [isLogin, setIsLogin] = useState(true);
+  const [loading, setloading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     mobileNo: "",
@@ -53,9 +55,10 @@ const AuthPage = ({ fetchUserProfile }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setloading(true);
     // Validate roll number length
     if (!isLogin && formData.rollNumber.length !== 12) {
       setAlert({
@@ -89,6 +92,7 @@ const AuthPage = ({ fetchUserProfile }) => {
             title: "Duplicate Email",
             message: "This email is already registered.",
           });
+          setloading(false);
         } else if (returneddata.message.includes("mobileNo")) {
           setAlert({
             show: true,
@@ -96,6 +100,7 @@ const AuthPage = ({ fetchUserProfile }) => {
             title: "Duplicate Phone Number",
             message: "This phone number is already registered.",
           });
+          setloading(false);
         } else if (returneddata.message.includes("rollNumber")) {
           setAlert({
             show: true,
@@ -103,6 +108,7 @@ const AuthPage = ({ fetchUserProfile }) => {
             title: "Duplicate Roll Number",
             message: "This roll number is already registered.",
           });
+          setloading(false);
         } else {
           setAlert({
             show: true,
@@ -110,9 +116,11 @@ const AuthPage = ({ fetchUserProfile }) => {
             title: "Error",
             message: returneddata.message || "An error occurred.",
           });
+          setloading(false);
         }
         return;
       }
+      setloading(false);
 
       dispatch(
         setLogin({ user: returneddata.user, token: returneddata.token })
@@ -308,6 +316,7 @@ const AuthPage = ({ fetchUserProfile }) => {
                     type="submit"
                     variant="contained"
                     fullWidth
+                    disabled={loading}
                     sx={{
                       mt: 2,
                       bgcolor: PRIMARY_COLOR,
@@ -316,9 +325,17 @@ const AuthPage = ({ fetchUserProfile }) => {
                       fontSize: isMobile ? "0.9rem" : "1rem",
                       padding: isMobile ? "10px" : "12px",
                       borderRadius: 3,
+                      '&:disabled': {
+                        bgcolor: PRIMARY_COLOR, // keep same background when disabled
+                        color: WHITE,
+                      },
                     }}
                   >
-                    {isLogin ? "Login" : "Sign Up"}
+                    {loading ? (
+                      <CircularProgress size={24} sx={{ color: WHITE }} />
+                    ) : (
+                      isLogin ? "Login" : "Sign Up"
+                    )}
                   </Button>
                 </motion.div>
               </form>
