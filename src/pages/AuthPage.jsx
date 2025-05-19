@@ -20,7 +20,7 @@ import { setLogin } from "../state";
 import { useNavigate } from "react-router-dom";
 import AlertNotification from "../components/Alert";
 import { Visibility, VisibilityOff } from "@mui/icons-material"; // Import visibility icons
-import validateRollNumber from "../checkers/rollNumberChecker";
+import validateRollNumber from "../src/checkers/rollNumberChecker";
 
 const PRIMARY_COLOR = "#b70924";
 const WHITE = "#ffffff";
