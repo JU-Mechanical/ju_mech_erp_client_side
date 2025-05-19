@@ -20,6 +20,7 @@ import { setLogin } from "../state";
 import { useNavigate } from "react-router-dom";
 import AlertNotification from "../components/Alert";
 import { Visibility, VisibilityOff } from "@mui/icons-material"; // Import visibility icons
+import validateRollNumber from "../checkers/rollNumberChecker";
 
 const PRIMARY_COLOR = "#b70924";
 const WHITE = "#ffffff";
@@ -59,14 +60,16 @@ const AuthPage = ({ fetchUserProfile }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setloading(true);
-    // Validate roll number length
-    if (!isLogin && formData.rollNumber.length !== 12) {
+    
+    // Validate roll number if signing up
+    if (!isLogin && !validateRollNumber(formData.rollNumber)) {
       setAlert({
         show: true,
         type: "error",
         title: "Invalid Roll Number",
-        message: "Roll number must be exactly 12 digits.",
+        message: "Invalid roll number",
       });
+      setloading(false);
       return;
     }
 

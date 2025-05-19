@@ -133,13 +133,13 @@ export default function Navbar() {
             component={Link}
             to="/notices"
             sx={{
-              color: "white",
-              fontSize: "1rem",
-              fontWeight: "bold",
+              fontSize: { xs: "0.9rem", md: "1.1rem" }, // Slightly larger font size
+              fontWeight: "bold", // Bold text for better readability
               "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                textDecoration: "underline",
+                color: "#ffcccb", // Stylish hover color
               },
-              transition: "all 0.3s ease",
+              transition: "color 0.3s ease", // Smooth color transition
             }}
           >
             Notices
@@ -149,43 +149,43 @@ export default function Navbar() {
             component={Link}
             to="/faculty"
             sx={{
-              color: "white",
-              fontSize: "1rem",
-              fontWeight: "bold",
+              fontSize: { xs: "0.9rem", md: "1.1rem" }, // Slightly larger font size
+              fontWeight: "bold", // Bold text for better readability
               "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                textDecoration: "underline",
+                color: "#ffcccb", // Stylish hover color
               },
-              transition: "all 0.3s ease",
+              transition: "color 0.3s ease", // Smooth color transition
             }}
           >
             Faculty
           </Button>
           <Button
-            component={Link}
-            to="/events"
+            color="inherit"
+            onClick={handleInProgress}
             sx={{
-              color: "white",
-              fontSize: "1rem",
-              fontWeight: "bold",
+              fontSize: { xs: "0.9rem", md: "1.1rem" }, // Slightly larger font size
+              fontWeight: "bold", // Bold text for better readability
               "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                textDecoration: "underline",
+                color: "#ffcccb", // Stylish hover color
               },
-              transition: "all 0.3s ease",
+              transition: "color 0.3s ease", // Smooth color transition
             }}
           >
             Events
           </Button>
           <Button
-            component={Link}
-            to="/routines"
+            color="inherit"
+            onClick={handleInProgress}
             sx={{
-              color: "white",
-              fontSize: "1rem",
-              fontWeight: "bold",
+              fontSize: { xs: "0.9rem", md: "1.1rem" }, // Slightly larger font size
+              fontWeight: "bold", // Bold text for better readability
               "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                textDecoration: "underline",
+                color: "#ffcccb", // Stylish hover color
               },
-              transition: "all 0.3s ease",
+              transition: "color 0.3s ease", // Smooth color transition
             }}
           >
             Routines

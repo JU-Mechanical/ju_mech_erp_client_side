@@ -49,14 +49,17 @@ const NoticePage = () => {
 
   return (
     <Box>
-      <Navbar />
+        <Navbar /> 
       {/* Maroon Header Strip */}
       <Box 
         sx={{ 
           width: '100%', 
           bgcolor: '#b70924', 
-          py: 2,
-          mt: 8,
+          py: 2, 
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          zIndex: 1,
           boxShadow: 3
         }}
       >
@@ -68,7 +71,7 @@ const NoticePage = () => {
       </Box>
 
       {/* Main Content */}
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="lg" sx={{ py: 4, mt: 12 }}>
         <Grid container spacing={3}>
           {notices.map((notice) => (
             <Grid item xs={12} key={notice.id}>
@@ -109,4 +112,4 @@ const NoticePage = () => {
   );
 };
 
-export default NoticePage;
+export default NoticePage; 
