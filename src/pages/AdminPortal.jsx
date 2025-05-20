@@ -30,23 +30,23 @@ export default function AdminPortal() {
           "The admin is responsible for managing the student profiles, handling pending requests, and configuring system settings. They play a crucial role in ensuring the smooth functioning of the portal and maintaining data integrity.",
       };
 
-      useEffect(() => {
-        const getallstudents=async()=>{
-            try {
-               const response=await fetch("https://jumechserver.onrender.com/admin/getstudents", {
-                method:"GET",
+      // useEffect(() => {
+      //   const getallstudents=async()=>{
+      //       try {
+      //          const response=await fetch("https://jumechserver.onrender.com/admin/getstudents", {
+      //           method:"GET",
                 
-               });
-               const studentdata=await response.json();
-               console.log(studentdata); 
-               setStudents(studentdata); 
-            } catch (error) {
+      //          });
+      //          const studentdata=await response.json();
+      //          console.log(studentdata); 
+      //          setStudents(studentdata); 
+      //       } catch (error) {
                 
-            }
-        }
-        getallstudents();
+      //       }
+      //   }
+      //   getallstudents();
 
-      },[]);
+      // },[]);
 
       
 
@@ -55,7 +55,7 @@ export default function AdminPortal() {
           case "AdminDetails":
             return <></>;
           case "ManageProfiles":
-            return   <UserList users={students} />
+            return   <UserList  />
           case "PendingRequests":
             return <Typography variant="h5">Pending Requests Component</Typography>;
           case "Settings":
