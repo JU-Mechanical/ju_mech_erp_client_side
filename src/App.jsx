@@ -51,15 +51,26 @@ const theme = createTheme({
 const ADMIN_KEY = import.meta.env.VITE_ADMIN_ACCESS_KEY;
 
 const PrivateRoute = ({ children }) => {
-  const keyMatch = localStorage.getItem('adminKey') === ADMIN_KEY;
+  const keyMatch = sessionStorage.getItem('adminKey') === ADMIN_KEY;
   useEffect(() => {
     return () => {
       // Clear the key ONLY if user is leaving the admin route
       if (location.pathname === '/admin') {
-        localStorage.removeItem('adminKey');
+        sessionStorage.removeItem('adminKey');
       }
     };
   }, [location.pathname]);
+
+  //  useEffect(() => {
+  //   const clearOnUnload = () => {
+  //     localStorage.removeItem('adminKey');
+  //   };
+  //   window.addEventListener('beforeunload', clearOnUnload);
+  //   return () => {
+  //     window.removeEventListener('beforeunload', clearOnUnload);
+  //   };
+  // }, []);
+
   if (keyMatch) return children;
   return <PromptForKey />;
 };

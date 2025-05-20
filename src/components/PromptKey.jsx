@@ -11,7 +11,7 @@ const PromptForKey = () => {
     const correctKey = import.meta.env.VITE_ADMIN_ACCESS_KEY;
   
     if (inputKey === correctKey) {
-      localStorage.setItem('adminKey', inputKey);
+      sessionStorage.setItem('adminKey', inputKey);
     window.location.reload(); // triggers route to Admin
     } else {
       setError('Invalid Key');

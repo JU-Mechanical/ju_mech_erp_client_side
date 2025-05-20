@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   List,
   ListItem,
@@ -8,26 +8,75 @@ import {
   TextField,
   InputAdornment,
   Box,
+  Skeleton,
+  Button,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import StudentProfile from './StudentProfile';
-
-const UserList = ({ users }) => {
-  const [selectedstudent, setSelectedStudent] = useState(null);
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+const UserList = () => {
+  const [users, setUsers] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 14;
 
   const onClose = () => {
     setSelectedStudent(null);
   };
 
+  const fetchUsers = async (page) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`https://jumechserver.onrender.com/admin/getstudents?page=${page}&limit=${limit}`);
+      const data = await res.json();
+      setUsers(data.users);
+      setTotalPages(data.totalPages);
+      setCurrentPage(data.currentPage);
+    } catch (err) {
+      console.error('Error fetching users', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers(currentPage);
+  }, [currentPage]);
+
   const filteredUsers = users.filter(user =>
     `${user.name} ${user.rollNumber}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  if (loading) {
+    return (
+      <Paper sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
+        <Skeleton variant="text" width={200} height={40} animation="wave" />
+        <Box mb={2}>
+          <Skeleton variant="rectangular" height={56} animation="wave" sx={{ borderRadius: 1 }} />
+        </Box>
+        <List>
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <ListItem key={idx} divider>
+              <Box sx={{ width: '100%' }}>
+                <Skeleton variant="text" width="60%" height={24} animation="wave" />
+                <Skeleton variant="text" width="40%" height={18} animation="wave" />
+              </Box>
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
+    );
+  }
+
   return (
     <>
-      {!selectedstudent ? (
-        <Paper  sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
+      {!selectedStudent ? (
+        <Paper sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
           <Typography variant="h5" gutterBottom>
             Student List
           </Typography>
@@ -64,9 +113,54 @@ const UserList = ({ users }) => {
               </ListItem>
             ))}
           </List>
+
+          {/* Pagination Buttons */}
+         <Box display="flex" justifyContent="center" alignItems="center" mt={3} gap={3}>
+  <Box
+    sx={{
+      p: 1.5,
+      borderRadius: '50%',
+      border: '1px solid #ccc',
+      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+      opacity: currentPage === 1 ? 0.4 : 1,
+      transition: 'all 0.3s ease',
+      '&:hover': {
+        backgroundColor: currentPage === 1 ? 'transparent' : '#f0f0f0',
+      },
+    }}
+    onClick={() => {
+      if (currentPage > 1) setCurrentPage(prev => prev - 1);
+    }}
+  >
+    <ArrowBackIosNewIcon fontSize="small" />
+  </Box>
+
+  <Typography variant="body1" fontWeight={500}>
+    Page {currentPage} of {totalPages}
+  </Typography>
+
+  <Box
+    sx={{
+      p: 1.5,
+      borderRadius: '50%',
+      border: '1px solid #ccc',
+      cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+      opacity: currentPage === totalPages ? 0.4 : 1,
+      transition: 'all 0.3s ease',
+      '&:hover': {
+        backgroundColor: currentPage === totalPages ? 'transparent' : '#f0f0f0',
+      },
+    }}
+    onClick={() => {
+      if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
+    }}
+  >
+    <ArrowForwardIosIcon fontSize="small" />
+  </Box>
+</Box>
         </Paper>
       ) : (
-        <StudentProfile user={selectedstudent} onClose={onClose} />
+        <StudentProfile user={selectedStudent} onClose={onClose} />
       )}
     </>
   );
