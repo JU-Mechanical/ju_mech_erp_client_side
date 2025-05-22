@@ -87,9 +87,9 @@ const StudentProfile = ({ user, onClose }) => {
           <Box key={i} sx={{ mb: 2 }}>
             <Typography variant="subtitle1">Semester {grade.semester}</Typography>
             <Field label="SGPA" value={grade.sgpa} />
-           <Button variant="outlined" onClick={() => setshowfile(grade.gradecard)}>
+           {grade.gardecard && (<Button variant="outlined" onClick={() => setshowfile(grade.gradecard)}>
   View Gradecard
-</Button>
+</Button>)}
           </Box>
         ))}
         {/* Projects */}
