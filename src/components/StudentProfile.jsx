@@ -250,9 +250,9 @@ const StudentProfile = ({ user, onClose }) => {
   .map(([key, value]) => (
     <Field key={key} label={key} value={value} />
 ))}
-             <Button variant="outlined" onClick={() => setshowfile(offer.offerLetter)}>
+            {offer.offerLetter&&( <Button variant="outlined" onClick={() => setshowfile(offer.offerLetter)}>
   View Offer Letter
-</Button>
+</Button>)}
           </Box>
         ))}
         {(careerProgression?.exams || []).map((exam, i) => (
@@ -261,9 +261,9 @@ const StudentProfile = ({ user, onClose }) => {
             {Object.entries(exam).filter(([key]) => key !== 'rankCard').filter(([key]) => key !== '_id').map(([key, value]) => (
               <Field key={key} label={key} value={value} />
             ))}
-             <Button variant="outlined" onClick={() => setshowfile(exam.rankCard)}>
+            {exam.rankCard && ( <Button variant="outlined" onClick={() => setshowfile(exam.rankCard)}>
   View Rank Card
-</Button>
+</Button>)}
           </Box>
         ))}
         {careerProgression?.higherStudy && (
@@ -272,9 +272,9 @@ const StudentProfile = ({ user, onClose }) => {
             {Object.entries(careerProgression.higherStudy).filter(([key]) => key !== '_id').filter(([key]) => key !== 'letter').map(([k, v]) => (
               <Field key={k} label={k} value={v} />
             ))}
-            <Button variant="outlined" onClick={() => setshowfile(careerProgression.higherStudy.letter)}>
+            {careerProgression?.higherStudy?.letter&&(<Button variant="outlined" onClick={() => setshowfile(careerProgression.higherStudy.letter)}>
   View Acceptance Letter
-</Button>
+</Button>)}
           </Box>
         )}
         {careerProgression?.startup && (
