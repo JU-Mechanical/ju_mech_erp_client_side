@@ -1,38 +1,51 @@
-import { Button, Container, Divider, Paper, TextField, Typography, useMediaQuery } from '@mui/material';
-import { motion,AnimatePresence } from 'framer-motion';
-import React, { useState } from 'react';
+import {
+  Button,
+  Container,
+  Divider,
+  Paper,
+  TextField,
+  Typography,
+  useMediaQuery,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import { motion, AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
 import JULogo from "../assets/julogo.png";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 const PromptForKey = () => {
-  const [inputKey, setInputKey] = useState('');
-  const [error, setError] = useState('');
+  const [inputKey, setInputKey] = useState("");
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const correctKey = import.meta.env.VITE_ADMIN_ACCESS_KEY;
-  
+
     if (inputKey === correctKey) {
-      sessionStorage.setItem('adminKey', inputKey);
-    window.location.reload(); // triggers route to Admin
+      sessionStorage.setItem("adminKey", inputKey);
+      window.location.reload(); // triggers route to Admin
     } else {
-      setError('Invalid Key');
+      setError("Invalid Key");
     }
   };
 
-   const isMobile = useMediaQuery("(max-width:600px)");
+  const isMobile = useMediaQuery("(max-width:600px)");
   const PRIMARY_COLOR = "#b70924";
-const WHITE = "#ffffff";
+  const WHITE = "#ffffff";
 
   return (
     // <div style={{ padding: 40 }}>
     //   <h2>Enter Admin Access Key</h2>
     //   <input
     //     type="password"
-     
+
     //   />
     //   <button onClick={handleSubmit}>Submit</button>
     //   {error && <p style={{ color: 'red' }}>{error}</p>}
     // </div>
-     <Container
+    <Container
       sx={{
         minHeight: "100vh",
         width: "100vw",
@@ -75,7 +88,7 @@ const WHITE = "#ffffff";
       >
         <AnimatePresence mode="wait">
           <motion.div
-            key={"login" }
+            key={"login"}
             initial={{ rotateY: 90, opacity: 0 }}
             animate={{ rotateY: 0, opacity: 1 }}
             exit={{ rotateY: -90, opacity: 0 }}
@@ -106,33 +119,40 @@ const WHITE = "#ffffff";
                   height: !isMobile ? 60 : 40,
                 }}
               />
-             
 
               <form onSubmit={handleSubmit} style={{ marginTop: 10 }}>
-            
-                  <>
-                    <TextField
-                     
-                      variant="outlined"
-                      fullWidth
-                      
-                      type="password"
-                        label="Access Key"
-     value={inputKey}
-     onChange={(e) => setInputKey(e.target.value)}
-                     
-                      margin="dense"
-                      sx={{
-                        bgcolor: "#f9f9f9",
-                        borderRadius: 2,
-                        "& .MuiOutlinedInput-root": { borderRadius: 2 },
-                      }}
-                    />
-                   
-                  </>
-              
-
-               
+                <>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    type={showPassword ? "text" : "password"}
+                    label="Access Key"
+                    value={inputKey}
+                    onChange={(e) => setInputKey(e.target.value)}
+                    margin="dense"
+                    sx={{
+                      bgcolor: "#f9f9f9",
+                      borderRadius: 2,
+                      "& .MuiOutlinedInput-root": { borderRadius: 2 },
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label={
+                              showPassword ? "Hide password" : "Show password"
+                            }
+                            onClick={() => setShowPassword((show) => !show)}
+                            edge="end"
+                            tabIndex={-1}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </>
 
                 <motion.div
                   whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
@@ -155,8 +175,6 @@ const WHITE = "#ffffff";
                   </Button>
                 </motion.div>
               </form>
-
-           
 
               <motion.div
                 whileHover={{
@@ -193,8 +211,6 @@ const WHITE = "#ffffff";
                   {isLogin ? "Login with Google" : "Sign Up with Google"}
                 </Button> */}
               </motion.div>
-
-             
             </Paper>
           </motion.div>
         </AnimatePresence>
