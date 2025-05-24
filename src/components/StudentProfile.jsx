@@ -63,17 +63,80 @@ const StudentProfile = ({ user, onClose }) => {
   const handleDownloadPDF = async () => {
     const input = profileRef.current;
     if (!input) return;
-    const canvas = await html2canvas(input, { scale: 2, useCORS: true });
+
+    // Add a white background for PDF for better print style
+    const originalBg = input.style.background;
+    input.style.background = "#fff";
+
+    // Optionally, add a border or shadow for PDF
+    input.style.boxShadow = "0 0 0 #fff";
+    input.style.padding = "24px";
+    input.style.borderRadius = "12px";
+
+    // Use html2canvas to render with higher quality and print-friendly style
+    const canvas = await html2canvas(input, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#fff",
+      // Remove box-shadow for print
+      ignoreElements: (el) => el.classList && el.classList.contains("no-print"),
+    });
+
+    // Restore original style
+    input.style.background = originalBg;
+    input.style.boxShadow = "";
+    input.style.padding = "";
+    input.style.borderRadius = "";
+
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF("p", "mm", "a4");
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+    let pageHeight = pdf.internal.pageSize.getHeight();
+
+    if (pdfHeight <= pageHeight) {
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    } else {
+      let renderedHeight = 0;
+      while (renderedHeight < pdfHeight) {
+        pdf.addImage(imgData, "PNG", 0, -renderedHeight, pdfWidth, pdfHeight);
+        renderedHeight += pageHeight;
+        if (renderedHeight < pdfHeight) {
+          pdf.addPage();
+        }
+      }
+    }
     pdf.save(`${user.name || "student"}_profile.pdf`);
   };
 
   return (
-    <Box p={3}>
+    <Box
+      p={3}
+      sx={{
+        background: "linear-gradient(135deg, #fff 60%, #fbeaec 100%)",
+        minHeight: "100vh",
+      }}
+    >
+      {/* Note for all users, responsive styling */}
+      <Typography
+        variant="body2"
+        sx={{
+          color: "#b70924",
+          fontWeight: 500,
+          mb: { xs: 2, md: 1 },
+          background: "rgba(247, 232, 232, 0.6)",
+          px: { xs: 1.5, md: 2 },
+          py: { xs: 1, md: 1 },
+          borderRadius: 2,
+          maxWidth: { xs: "100%", md: 400 },
+          fontSize: { xs: "0.98rem", md: "1rem" },
+          textAlign: { xs: "center", md: "left" },
+          mx: { xs: "auto", md: 0 },
+        }}
+      >
+        Note: For best results, download PDF while in desktop view.
+      </Typography>
       <Button
         variant="text"
         onClick={onClose}
@@ -82,6 +145,16 @@ const StudentProfile = ({ user, onClose }) => {
           textTransform: "none",
           fontWeight: "medium",
           color: "#b70924",
+          fontSize: "1.1rem",
+          borderRadius: 2,
+          px: 2,
+          py: 1,
+          mb: 2,
+          background: "rgba(247, 232, 232, 0.6)",
+          "&:hover": {
+            background: "#fbeaec",
+            color: "#fff",
+          },
         }}
       >
         Back
@@ -89,12 +162,38 @@ const StudentProfile = ({ user, onClose }) => {
       <Button
         variant="contained"
         color="primary"
-        sx={{ ml: 2, mb: 2 }}
+        sx={{
+          ml: 2,
+          mb: 2,
+          background: "#b70924",
+          fontWeight: 700,
+          borderRadius: 2,
+          px: 3,
+          py: 1,
+          fontSize: "1.05rem",
+          boxShadow: "0 2px 8px 0 rgba(183,9,36,0.08)",
+          "&:hover": {
+            background: "#a1071f",
+          },
+        }}
         onClick={handleDownloadPDF}
       >
         Download PDF
       </Button>
-      <div ref={profileRef}>
+      <div
+        ref={profileRef}
+        style={{
+          background: "#fff",
+          borderRadius: "16px",
+          boxShadow: "0 2px 16px 0 rgba(183,9,36,0.09)",
+          padding: "32px 18px",
+          marginTop: 16,
+          marginBottom: 16,
+          maxWidth: 900,
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      >
         {/* Basic Info */}
         <Section title="Basic Information">
           <Field label="Name" value={name} />
