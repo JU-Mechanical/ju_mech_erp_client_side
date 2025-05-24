@@ -408,6 +408,15 @@ const StudentProfile = ({ user, onClose }) => {
 
         {/* Co-Curricular Info */}
         <Section title="Co-Curricular Activities">
+          {/*
+            "clubs",
+            "techFests",
+            "leadership",
+            "sports",
+            "skills",
+            "socialActivities",
+            "seminars",
+          */}
           {[
             "clubs",
             "techFests",
@@ -417,35 +426,113 @@ const StudentProfile = ({ user, onClose }) => {
             "socialActivities",
             "seminars",
           ].map((cat) => (
-            <Box key={cat} sx={{ mb: 2 }}>
+            <Box
+              key={cat}
+              sx={{
+                mb: 2,
+                background: "#f9f6f8",
+                borderRadius: 2,
+                boxShadow: "0 1px 6px 0 rgba(183,9,36,0.07)",
+                px: 2,
+                py: 1.5,
+              }}
+            >
               <Typography
                 variant="subtitle1"
-                sx={{ textTransform: "capitalize" }}
+                sx={{
+                  textTransform: "capitalize",
+                  fontWeight: 700,
+                  color: "#b70924",
+                  letterSpacing: 0.5,
+                  mb: 1,
+                  fontSize: "1.08rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
               >
-                {cat}
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: "#b70924",
+                    marginRight: 8,
+                  }}
+                ></span>
+                {cat.replace(/([A-Z])/g, " $1")}
               </Typography>
-              {(curricularInfo?.[cat] || []).map((item, idx) => (
-                <Card variant="outlined" sx={{ my: 1, p: 1 }} key={idx}>
-                  {Object.entries(item)
-                    .filter(([key]) => key !== "_id")
-                    .filter(([key]) => key !== "certificate")
-                    .map(([k, v]) => (
-                      <Field
-                        key={k}
-                        label={k}
-                        value={Array.isArray(v) ? v.join(", ") : v}
-                      />
-                    ))}
-                  {item.certificate && (
-                    <Button
-                      variant="outlined"
-                      onClick={() => setshowfile(item.certificate)}
-                    >
-                      View Certificate
-                    </Button>
-                  )}
-                </Card>
-              ))}
+              {(curricularInfo?.[cat] || []).length === 0 ? (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ ml: 2 }}
+                >
+                  No entries
+                </Typography>
+              ) : (
+                (curricularInfo?.[cat] || []).map((item, idx) => (
+                  <Card
+                    variant="outlined"
+                    sx={{
+                      my: 1,
+                      p: 1.5,
+                      borderRadius: 2,
+                      borderColor: "#b70924",
+                      background: "#fff",
+                      boxShadow: "0 1px 4px 0 rgba(183,9,36,0.04)",
+                    }}
+                    key={idx}
+                  >
+                    {Object.entries(item)
+                      .filter(([key]) => key !== "_id")
+                      .filter(([key]) => key !== "certificate")
+                      .map(([k, v]) => (
+                        <Box key={k} sx={{ mb: 0.5 }}>
+                          <Typography
+                            component="span"
+                            sx={{
+                              fontWeight: 600,
+                              color: "#b70924",
+                              fontSize: "0.98em",
+                              mr: 1,
+                            }}
+                          >
+                            {k.replace(/([A-Z])/g, " $1")}:
+                          </Typography>
+                          <Typography
+                            component="span"
+                            sx={{
+                              color: "#222",
+                              fontSize: "0.98em",
+                            }}
+                          >
+                            {Array.isArray(v) ? v.join(", ") : v}
+                          </Typography>
+                        </Box>
+                      ))}
+                    {item.certificate && (
+                      <Button
+                        variant="outlined"
+                        onClick={() => setshowfile(item.certificate)}
+                        sx={{
+                          mt: 1,
+                          borderColor: "#b70924",
+                          color: "#b70924",
+                          fontWeight: 600,
+                          "&:hover": {
+                            background: "#fbeaec",
+                            borderColor: "#b70924",
+                          },
+                        }}
+                      >
+                        View Certificate
+                      </Button>
+                    )}
+                  </Card>
+                ))
+              )}
             </Box>
           ))}
         </Section>

@@ -9,23 +9,23 @@ import {
   InputAdornment,
   Box,
   Skeleton,
-  Button,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import StudentProfile from "./StudentProfile";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const limit = 14;
   const [allUsers, setAllUsers] = useState([]);
+
+  const limit = 14;
 
   const onClose = () => {
     setSelectedStudent(null);
@@ -38,57 +38,77 @@ const UserList = () => {
         `https://jumechserver.onrender.com/admin/getstudents?page=${page}&limit=${limit}`
       );
       const data = await res.json();
-      setUsers(data.users);
-      setTotalPages(data.totalPages);
-      setCurrentPage(data.currentPage);
-      setTotalCount(data.totalCount || 0); // <-- get totalCount from backend
+
+      if (data.users && Array.isArray(data.users)) {
+        setUsers(data.users);
+        setTotalPages(data.totalPages || 1);
+        setCurrentPage(data.currentPage || 1);
+      } else {
+        console.error("Invalid data format received from server");
+        setUsers([]);
+      }
     } catch (err) {
       console.error("Error fetching users", err);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch all users for search (only once)
+  // Fetch all users to get total count and no-data count
   const fetchAllUsers = async () => {
     try {
       let page = 1;
       let all = [];
       let hasMore = true;
+      const limit = 14;
       while (hasMore) {
         const res = await fetch(
           `https://jumechserver.onrender.com/admin/getstudents?page=${page}&limit=${limit}`
         );
         const data = await res.json();
         if (Array.isArray(data.users)) {
-          all = all.concat(data.users);
+          all = [...all, ...data.users];
         }
-        if (page >= data.totalPages) {
+        if (
+          page >= (data.totalPages || 1) ||
+          !data.users ||
+          data.users.length === 0
+        ) {
           hasMore = false;
         } else {
           page++;
         }
       }
       setAllUsers(all);
+
+      // Count users with no data (all fields empty or null except _id)
+      const noDataCount = all.filter((u) => {
+        const keys = Object.keys(u).filter((k) => k !== "_id");
+        return keys.every((k) => {
+          const v = u[k];
+          if (Array.isArray(v)) return v.length === 0;
+          if (typeof v === "object" && v !== null)
+            return Object.keys(v).length === 0;
+          return v === null || v === undefined || v === "";
+        });
+      }).length;
+      setTotalCount(`${all.length} (No Data: ${noDataCount})`);
     } catch (err) {
-      // fail silently
+      setAllUsers([]);
+      setTotalCount(0);
     }
   };
 
   useEffect(() => {
     fetchUsers(currentPage);
+    fetchAllUsers();
   }, [currentPage]);
 
-  // Fetch all users for search only once
-  useEffect(() => {
-    fetchAllUsers();
-  }, []);
-
-  // If searching, filter from allUsers, else show current page
   const filteredUsers =
     searchTerm.trim() !== ""
       ? allUsers.filter((user) =>
-          `${user.name} ${user.rollNumber}`
+          `${user.name || ""} ${user.rollNumber || ""}`
             .toLowerCase()
             .includes(searchTerm.toLowerCase())
         )
@@ -137,10 +157,49 @@ const UserList = () => {
           <Typography variant="h5" gutterBottom>
             Student List
           </Typography>
-          <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-            Total Students: {totalCount}
-          </Typography>
-
+          <Box
+            sx={{
+              mb: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              fontWeight: 600,
+              fontSize: "1.08rem",
+              color: "#b70924",
+              background: "rgba(247, 232, 232, 0.7)",
+              px: 2,
+              py: 1,
+              borderRadius: 2,
+              boxShadow: "0 1px 6px 0 rgba(183,9,36,0.07)",
+              width: "fit-content",
+            }}
+          >
+            <span
+              style={{
+                fontWeight: 700,
+                fontSize: "1.13rem",
+                color: "#b70924",
+              }}
+            >
+              Total Students:
+            </span>
+            <span style={{ fontWeight: 700, color: "#222" }}>
+              {totalCount.toString().split(" ")[0]}
+            </span>
+            <span
+              style={{
+                fontWeight: 500,
+                color: "#fff",
+                background: "#b70924",
+                borderRadius: "12px",
+                padding: "2px 10px",
+                fontSize: "0.95em",
+                marginLeft: 8,
+              }}
+            >
+              {totalCount.toString().match(/\(No Data: \d+\)/)?.[0]}
+            </span>
+          </Box>
           <Box mb={2}>
             <TextField
               fullWidth
@@ -159,74 +218,80 @@ const UserList = () => {
           </Box>
 
           <List>
-            {filteredUsers.map((user, index) => (
-              <ListItem
-                key={index}
-                divider
-                onClick={() => setSelectedStudent(user)}
-                sx={{ cursor: "pointer" }}
-              >
-                <ListItemText
-                  primary={user.name}
-                  secondary={`Roll No: ${user.rollNumber}`}
-                />
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((user, index) => (
+                <ListItem
+                  key={index}
+                  divider
+                  onClick={() => setSelectedStudent(user)}
+                  sx={{ cursor: "pointer" }}
+                >
+                  <ListItemText
+                    primary={user.name || "No name"}
+                    secondary={`Roll No: ${user.rollNumber || "N/A"}`}
+                  />
+                </ListItem>
+              ))
+            ) : (
+              <ListItem>
+                <ListItemText primary="No students found" />
               </ListItem>
-            ))}
+            )}
           </List>
 
           {/* Pagination Buttons */}
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            mt={3}
-            gap={3}
-          >
+          {searchTerm.trim() === "" && (
             <Box
-              sx={{
-                p: 1.5,
-                borderRadius: "50%",
-                border: "1px solid #ccc",
-                cursor: currentPage === 1 ? "not-allowed" : "pointer",
-                opacity: currentPage === 1 ? 0.4 : 1,
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  backgroundColor:
-                    currentPage === 1 ? "transparent" : "#f0f0f0",
-                },
-              }}
-              onClick={() => {
-                if (currentPage > 1) setCurrentPage((prev) => prev - 1);
-              }}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              mt={3}
+              gap={3}
             >
-              <ArrowBackIosNewIcon fontSize="small" />
-            </Box>
+              <Box
+                sx={{
+                  p: 1.5,
+                  borderRadius: "50%",
+                  border: "1px solid #ccc",
+                  cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                  opacity: currentPage === 1 ? 0.4 : 1,
+                  "&:hover": {
+                    backgroundColor:
+                      currentPage === 1 ? "transparent" : "#f0f0f0",
+                  },
+                }}
+                onClick={() =>
+                  currentPage > 1 && setCurrentPage(currentPage - 1)
+                }
+              >
+                <ArrowBackIosNewIcon fontSize="small" />
+              </Box>
 
-            <Typography variant="body1" fontWeight={500}>
-              Page {currentPage} of {totalPages}
-            </Typography>
+              <Typography variant="body1" fontWeight={500}>
+                Page {currentPage} of {totalPages}
+              </Typography>
 
-            <Box
-              sx={{
-                p: 1.5,
-                borderRadius: "50%",
-                border: "1px solid #ccc",
-                cursor: currentPage === totalPages ? "not-allowed" : "pointer",
-                opacity: currentPage === totalPages ? 0.4 : 1,
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  backgroundColor:
-                    currentPage === totalPages ? "transparent" : "#f0f0f0",
-                },
-              }}
-              onClick={() => {
-                if (currentPage < totalPages)
-                  setCurrentPage((prev) => prev + 1);
-              }}
-            >
-              <ArrowForwardIosIcon fontSize="small" />
+              <Box
+                sx={{
+                  p: 1.5,
+                  borderRadius: "50%",
+                  border: "1px solid #ccc",
+                  cursor:
+                    currentPage === totalPages ? "not-allowed" : "pointer",
+                  opacity: currentPage === totalPages ? 0.4 : 1,
+                  "&:hover": {
+                    backgroundColor:
+                      currentPage === totalPages ? "transparent" : "#f0f0f0",
+                  },
+                }}
+                onClick={() =>
+                  currentPage < totalPages && setCurrentPage(currentPage + 1)
+                }
+              >
+                <ArrowForwardIosIcon fontSize="small" />
+              </Box>
             </Box>
-          </Box>
+          )}
         </Paper>
       ) : (
         <StudentProfile user={selectedStudent} onClose={onClose} />
