@@ -25,6 +25,7 @@ const UserList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 14;
+  const [allUsers, setAllUsers] = useState([]);
 
   const onClose = () => {
     setSelectedStudent(null);
@@ -48,15 +49,50 @@ const UserList = () => {
     }
   };
 
+  // Fetch all users for search (only once)
+  const fetchAllUsers = async () => {
+    try {
+      let page = 1;
+      let all = [];
+      let hasMore = true;
+      while (hasMore) {
+        const res = await fetch(
+          `https://jumechserver.onrender.com/admin/getstudents?page=${page}&limit=${limit}`
+        );
+        const data = await res.json();
+        if (Array.isArray(data.users)) {
+          all = all.concat(data.users);
+        }
+        if (page >= data.totalPages) {
+          hasMore = false;
+        } else {
+          page++;
+        }
+      }
+      setAllUsers(all);
+    } catch (err) {
+      // fail silently
+    }
+  };
+
   useEffect(() => {
     fetchUsers(currentPage);
   }, [currentPage]);
 
-  const filteredUsers = users.filter((user) =>
-    `${user.name} ${user.rollNumber}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  // Fetch all users for search only once
+  useEffect(() => {
+    fetchAllUsers();
+  }, []);
+
+  // If searching, filter from allUsers, else show current page
+  const filteredUsers =
+    searchTerm.trim() !== ""
+      ? allUsers.filter((user) =>
+          `${user.name} ${user.rollNumber}`
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        )
+      : users;
 
   if (loading) {
     return (

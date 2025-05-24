@@ -81,7 +81,8 @@ const StudentProfile = ({ user, onClose }) => {
         sx={{
           textTransform: "none",
           fontWeight: "medium",
-          color: "#b70924"}}
+          color: "#b70924",
+        }}
       >
         Back
       </Button>
