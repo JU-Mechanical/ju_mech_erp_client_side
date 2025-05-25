@@ -625,26 +625,25 @@ export default function MultiStepForm({ fetchUserProfile }) {
         {/* component selection based on activeSession state */}
         {sections[activeSection].component}
 
-        {/* If mobile use button to proceed to next page */}
+        {/* Navigation and Submit buttons */}
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between", // Adjust spacing for Back and Next buttons
+            justifyContent: "space-between",
             gap: 2,
+            mt: 2,
           }}
         >
           {activeSection > 0 && (
-            // Render "Back" button for all sections except the first one
             <Button
               variant="outlined"
               sx={{
-                mt: 3,
                 borderRadius: "10px",
                 color: "#b70924",
                 borderColor: "#b70924",
                 "&:hover": { background: "#f5f5f5" },
-                width: isMobile ? "40%" : "20%", // Adjust button width for mobile
+                width: isMobile ? "40%" : "20%",
               }}
               onClick={() =>
                 setActiveSection((prev) => (prev > 0 ? prev - 1 : prev))
@@ -653,17 +652,15 @@ export default function MultiStepForm({ fetchUserProfile }) {
               Back
             </Button>
           )}
-          {activeSection < sections.length - 1 ? (
-            // Render "Next" button for all sections except the last one
+          {activeSection < sections.length - 1 && (
             <Button
               variant="contained"
               sx={{
-                mt: 3,
                 borderRadius: "10px",
                 background: "#b70924",
                 color: "#fff",
                 "&:hover": { background: "#90071d" },
-                width: isMobile ? "40%" : "20%", // Adjust button width for mobile
+                width: isMobile ? "40%" : "20%",
               }}
               onClick={() =>
                 setActiveSection((prev) =>
@@ -673,23 +670,21 @@ export default function MultiStepForm({ fetchUserProfile }) {
             >
               Next
             </Button>
-          ) : (
-            // Render "Submit" button on the last section
-            <Button
-              variant="contained"
-              sx={{
-                mt: 3,
-                borderRadius: "10px",
-                background: "#388e3c",
-                color: "#fff",
-                "&:hover": { background: "#2e7d32" },
-                width: isMobile ? "40%" : "20%", // Adjust button width for mobile
-              }}
-              onClick={() => handleFormSubmit()}
-            >
-              Submit
-            </Button>
           )}
+          {/* Always show Submit button */}
+          <Button
+            variant="contained"
+            sx={{
+              borderRadius: "10px",
+              background: "#388e3c",
+              color: "#fff",
+              "&:hover": { background: "#2e7d32" },
+              width: isMobile ? "40%" : "20%",
+            }}
+            onClick={() => handleFormSubmit()}
+          >
+            Submit
+          </Button>
         </Box>
       </Box>
       <Snackbar
