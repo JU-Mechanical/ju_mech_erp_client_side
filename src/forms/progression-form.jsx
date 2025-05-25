@@ -18,6 +18,7 @@ import {
   FormControlLabel,
   Checkbox,
   IconButton,
+  useMediaQuery,
 } from "@mui/material";
 import { Add, Delete } from "@mui/icons-material";
 import FileUploadField from "../pages/file-upload-field";
@@ -46,6 +47,8 @@ export default function ProgressionForm({ formData, handleChange }) {
     associated: false,
     interested: false,
   });
+
+  const isMobile = useMediaQuery("(max-width:900px)");
 
   // Handle tab change
   const handleTabChange = (event, newValue) => {
@@ -191,17 +194,35 @@ export default function ProgressionForm({ formData, handleChange }) {
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
-        Progression/placements/Competitive Examinations
+        
       </Typography>
       <Divider className="mb-4" />
 
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <Box
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+          overflowX: isMobile ? "auto" : "visible",
+          mb: 2,
+        }}
+      >
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
           aria-label="progression tabs"
+          variant={isMobile ? "scrollable" : "standard"}
+          scrollButtons={isMobile ? "auto" : false}
+          allowScrollButtonsMobile={isMobile}
+          sx={{
+            minHeight: 48,
+            "& .MuiTab-root": {
+              minWidth: isMobile ? 120 : 160,
+              fontSize: isMobile ? "0.95rem" : "1.05rem",
+              px: isMobile ? 1 : 2,
+            },
+          }}
         >
-          <Tab label="placements" />
+          <Tab label="Placements" />
           <Tab label="Competitive Exams" />
           <Tab label="Higher Study" />
           <Tab label="Startups" />
