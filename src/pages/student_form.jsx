@@ -297,7 +297,6 @@ export default function MultiStepForm({ fetchUserProfile }) {
 
   //* state to control misc form details
   const [miscformData, setMiscFormData] = useState({
-   
     keyLearnings: "",
     sop: "",
     vision: "",
@@ -392,7 +391,6 @@ export default function MultiStepForm({ fetchUserProfile }) {
       },
       curricularInfo: curricularformData,
       miscellaneous: {
-        
         keyLearnings: miscformData.keyLearnings,
         sop: miscformData.sop,
         vision: miscformData.vision,
@@ -500,11 +498,27 @@ export default function MultiStepForm({ fetchUserProfile }) {
     },
     {
       title: "Academic Info",
+      // component: (
+      //   <AcademicInfoForm
+      //     formData={acedamicformData}
+      //     handleChange={handleacedamicChange}
+      //   />
+      // ),
       component: (
-        <AcademicInfoForm
-          formData={acedamicformData}
-          handleChange={handleacedamicChange}
-        />
+        <Box
+          sx={{
+            p: 5,
+            textAlign: "center",
+            color: "#b70924",
+            fontWeight: 600,
+            fontSize: "1.3rem",
+            background: "rgba(247, 232, 232, 0.5)",
+            borderRadius: 3,
+            mt: 5,
+          }}
+        >
+          Academic Info form is under maintenance.
+        </Box>
       ),
     },
     {

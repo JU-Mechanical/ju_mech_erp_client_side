@@ -174,8 +174,8 @@ export default function AcademicInfoForm({ formData, handleChange }) {
   //& Function to handle updates in diffrent acedamic input fields
   //? Update semester details
   const handleGradeChange = (index, field, value) => {
-    const updatedGrades = formData.grades.map((grade, i) =>
-      i === index ? { ...grade, [field]: value } : grade
+    const updatedGrades = formData.grades.map((grades, i) =>
+      i === index ? { ...grades, [field]: value } : grades
     );
     handleChange({ target: { name: "grades", value: updatedGrades } });
   };
@@ -268,16 +268,16 @@ export default function AcademicInfoForm({ formData, handleChange }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {formData.grades.map((grade, index) => (
+              {formData.grades.map((grades, index) => (
                 <TableRow key={index}>
                   {/* Semester Number */}
-                  <TableCell>{grade.semester}</TableCell>
+                  <TableCell>{grades.semester}</TableCell>
                   {/* Semester SGPA */}
                   <TableCell>
                     <TextField
                       fullWidth
                       name="grades"
-                      value={grade.sgpa}
+                      value={grades.sgpa}
                       onChange={(e) =>
                         handleGradeChange(index, "sgpa", e.target.value)
                       }
