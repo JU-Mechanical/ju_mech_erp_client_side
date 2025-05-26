@@ -61,6 +61,7 @@ const FloatingLabelTextField = ({ label, name, type = "text", value, onChange, r
 );
 
 export default function PersonalInfoForm({ formData, handleChange }) {
+  console.log(formData.dob);
   return (
     <Box sx={{ }}>
       <Typography variant="h4" sx={{mb:5}} gutterBottom>

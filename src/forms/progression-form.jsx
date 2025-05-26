@@ -24,6 +24,7 @@ import { Add, Delete } from "@mui/icons-material";
 import FileUploadField from "../pages/file-upload-field";
 import { CloudUpload, Cancel, CloudDone } from "@mui/icons-material";
 import { uploadFileToCloudinary } from "../helpers/uploadfiles";
+import { useSelector } from "react-redux";
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -41,7 +42,8 @@ function TabPanel({ children, value, index, ...other }) {
 
 export default function ProgressionForm({ formData, handleChange }) {
   const [tabValue, setTabValue] = useState(0);
-  const [ifPlaced, setIfPlaced] = useState(false);
+  const user=useSelector((state) => state.user);  
+  const [ifPlaced, setIfPlaced] = useState(user?.careerProgression?.placement?.length>0);
   const [hasTraining, setHasTraining] = useState(false);
   const [startupOptions, setStartupOptions] = useState({
     associated: false,

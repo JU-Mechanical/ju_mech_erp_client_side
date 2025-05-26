@@ -41,10 +41,19 @@ export default function MultiStepForm({ fetchUserProfile }) {
     setSnackbarOpen(false);
   };
 
+const formatDOB = (dob) => {
+  if (!dob) return "";
+  const date = new Date(dob);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
   //* state object to store personal details/general info of student
   const [personalformData, setPersonalFormData] = useState({
     name: user?.personalInfo?.name || "",
-    dob: user?.personalInfo?.dob || "",
+    dob: formatDOB(user?.personalInfo?.dob) || "",
     gender: user?.personalInfo?.gender || "",
     category: user?.personalInfo?.category || "",
     isPwd: user?.personalInfo?.isPwd || false,
@@ -98,7 +107,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
 
   //* state to control acedamic details at the university
   const [acedamicformData, setAcedamicFormData] = useState({
-    grades: user?.acedamicInfo?.grades || [
+    grades: user?.academicInfo?.grades || [
       {
         semester: 1,
         sgpa: "",
@@ -106,9 +115,9 @@ export default function MultiStepForm({ fetchUserProfile }) {
         gradecard: null,
       },
     ],
-    selectedProfessional: user?.acedamicInfo?.selectedProfessional || [],
-    selectedOpen: user?.acedamicInfo?.selectedOpen || [],
-    projects: user?.acedamicInfo?.projects || [
+    selectedProfessional: user?.academicInfo?.selectedProfessional || [],
+    selectedOpen: user?.academicInfo?.selectedOpen || [],
+    projects: user?.academicInfo?.projects || [
       {
         title: "",
         type: "",
@@ -121,11 +130,11 @@ export default function MultiStepForm({ fetchUserProfile }) {
         institute: "",
         sdgConnection: false,
         outcome: "",
-        certificate: null,
+        certificate: "",
       },
     ],
     publications: {
-      journalPapers: user?.acedamicInfo?.publications?.journalPapers || [
+      journalPapers: user?.academicInfo?.publications?.journalPapers || [
         {
           title: "",
           journalName: "",
@@ -135,7 +144,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
           firstPage: "",
         },
       ],
-      conferencePapers: user?.acedamicInfo?.publications?.conferencePapers || [
+      conferencePapers: user?.academicInfo?.publications?.conferencePapers || [
         {
           title: "",
           conferenceName: "",
@@ -144,7 +153,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
           organizedBy: "",
         },
       ],
-      patent: user?.acedamicInfo?.publications?.patent || [
+      patent: user?.academicInfo?.publications?.patent || [
         {
           title: "",
           details: "",
@@ -154,7 +163,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
         },
       ],
     },
-    courses: user?.acedamicInfo?.courses || [
+    courses: user?.academicInfo?.courses || [
       {
         name: "",
         duration: "",
@@ -169,7 +178,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
         certificate: null,
       },
     ],
-    trainings: user?.acedamicInfo?.trainings || [
+    trainings: user?.academicInfo?.trainings || [
       {
         place: "",
         duration: 0,
@@ -179,7 +188,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
         certificate: null,
       },
     ],
-    interns: user?.acedamicInfo?.interns || [
+    interns: user?.academicInfo?.interns || [
       {
         place: "",
         duration: "",
@@ -190,7 +199,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
         certificate: null,
       },
     ],
-    remedial: user?.acedamicInfo?.remedial || [
+    remedial: user?.academicInfo?.remedial || [
       {
         num: 0,
         name: "",
@@ -237,7 +246,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
         clubs: null,
       },
     ],
-    techFests: user?.curricularInfo?.techfests || [
+    techFests: user?.curricularInfo?.techFests || [
       {
         name: "",
         organizer: "",
@@ -296,7 +305,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
   });
 
   //* state to control misc form details
-  const [miscformData, setMiscFormData] = useState({
+  const [miscformData, setMiscFormData] = useState(user?.miscellaneous ||{
     keyLearnings: "",
     sop: "",
     vision: "",
@@ -377,7 +386,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
 
   //& function to handle submit of the form data to the server
   const handleFormSubmit = async () => {
-    console.log(acadbackformData);
+    console.log(acedamicformData);
     const allFormData = {
       personalInfo: personalformData,
       enrollmentDetails: enrollformData,
@@ -498,28 +507,28 @@ export default function MultiStepForm({ fetchUserProfile }) {
     },
     {
       title: "Academic Info",
-      // component: (
-      //   <AcademicInfoForm
-      //     formData={acedamicformData}
-      //     handleChange={handleacedamicChange}
-      //   />
-      // ),
       component: (
-        <Box
-          sx={{
-            p: 5,
-            textAlign: "center",
-            color: "#b70924",
-            fontWeight: 600,
-            fontSize: "1.3rem",
-            background: "rgba(247, 232, 232, 0.5)",
-            borderRadius: 3,
-            mt: 5,
-          }}
-        >
-          Academic Info form is under maintenance.
-        </Box>
+        <AcademicInfoForm
+          formData={acedamicformData}
+          handleChange={handleacedamicChange}
+        />
       ),
+      // component: (
+      //   <Box
+      //     sx={{
+      //       p: 5,
+      //       textAlign: "center",
+      //       color: "#b70924",
+      //       fontWeight: 600,
+      //       fontSize: "1.3rem",
+      //       background: "rgba(247, 232, 232, 0.5)",
+      //       borderRadius: 3,
+      //       mt: 5,
+      //     }}
+      //   >
+      //     Academic Info form is under maintenance.
+      //   </Box>
+      // ),
     },
     {
       title: "Placement",
@@ -697,7 +706,7 @@ export default function MultiStepForm({ fetchUserProfile }) {
             }}
             onClick={() => handleFormSubmit()}
           >
-            Submit
+            {activeSection===6?"Submit":"Save"}
           </Button>
         </Box>
       </Box>
