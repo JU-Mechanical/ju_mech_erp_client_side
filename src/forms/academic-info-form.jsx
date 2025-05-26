@@ -138,7 +138,7 @@ export default function AcademicInfoForm({ formData, handleChange }) {
         institute: "",
         sdgConnection: false,
         outcome: "",
-        certificate: [],
+        certificate: "",
       },
     ];
     handleChange({ target: { name: "projects", value: newProject } });
