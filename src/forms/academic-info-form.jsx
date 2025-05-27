@@ -128,7 +128,7 @@ export default function AcademicInfoForm({ formData, handleChange }) {
       ...formData.projects,
       {
         title: "",
-        typeP: "",
+        typeP: "Major",
         mode: "",
         duration: "",
         year: "",
@@ -455,18 +455,16 @@ export default function AcademicInfoForm({ formData, handleChange }) {
                   <MenuItem value="Minor">Minor</MenuItem>
                 </Select>
               </FormControl>
-              <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel>Mode</InputLabel>
-                <Select
-                  value={value.mode}
-                  Change={(e) =>
-                    handleProjectChange(index, "mode", e.target.value)
-                  }
-                >
-                  <MenuItem value="Online">Online</MenuItem>
-                  <MenuItem value="Offline">Offline</MenuItem>
-                </Select>
-              </FormControl>
+                <TextField
+                label="Title"
+                 fullWidth
+                sx={{ mb: 2 }}
+                       value={value.title}
+                        onChange={(e) =>
+                          handleProjectChange(index, "title", e.target.value)
+                        }
+                      />
+                        
               <TextField
                 label="Duration"
                 fullWidth
@@ -564,7 +562,7 @@ export default function AcademicInfoForm({ formData, handleChange }) {
                 <TableRow>
                   {[
                     "Type",
-                    "Mode",
+                    "Title",
                     "Duration",
                     "Year",
                     "Grading",
@@ -604,17 +602,13 @@ export default function AcademicInfoForm({ formData, handleChange }) {
                       </Select>
                     </TableCell>
                     <TableCell>
-                      <Select
-                        fullWidth
-                        defaultValue=""
-                        value={value.mode || ""}
+                      <TextField
+                       value={value.title}
                         onChange={(e) =>
-                          handleProjectChange(index, "mode", e.target.value)
+                          handleProjectChange(index, "title", e.target.value)
                         }
-                      >
-                        <MenuItem value="Online">Online</MenuItem>
-                        <MenuItem value="Offline">Offline</MenuItem>
-                      </Select>
+                      />
+                        
                     </TableCell>
                     <TableCell>
                       <TextField

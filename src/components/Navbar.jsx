@@ -287,24 +287,24 @@ export default function Navbar() {
                   </MenuItem>,
                 ]
               : [
-                  <MenuItem
-                    key="user-login"
-                    component={Link}
-                    to="/auth"
-                    onClick={handleMenuClose}
-                    sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}
-                  >
-                    Login
-                  </MenuItem>,
-                  <MenuItem
-                    key="administer-login"
-                    component={Link}
-                    to="/admin-login"
-                    onClick={handleMenuClose}
-                    sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}
-                  >
-                    Administrative Login
-                  </MenuItem>,
+                  // <MenuItem
+                  //   key="user-login"
+                  //   component={Link}
+                  //   to="/auth"
+                  //   onClick={handleMenuClose}
+                  //   sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}
+                  // >
+                  //   Login
+                  // </MenuItem>,
+                  // <MenuItem
+                  //   key="administer-login"
+                  //   component={Link}
+                  //   to="/admin-login"
+                  //   onClick={handleMenuClose}
+                  //   sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}
+                  // >
+                  //   Administrative Login
+                  // </MenuItem>,
                 ]}
           </Menu>
         </Box>
