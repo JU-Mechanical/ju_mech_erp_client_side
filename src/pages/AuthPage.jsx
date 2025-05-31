@@ -60,7 +60,7 @@ const AuthPage = ({ fetchUserProfile }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setloading(true);
-    
+
     // Validate roll number if signing up
     if (!isLogin && !validateRollNumber(formData.rollNumber)) {
       setAlert({
@@ -311,6 +311,22 @@ const AuthPage = ({ fetchUserProfile }) => {
                     ),
                   }}
                 />
+
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mt: 2,
+                    cursor: "pointer",
+                    color: PRIMARY_COLOR,
+                    fontWeight: "bold",
+                    textAlign: "right",
+                    "&:hover": { textDecoration: "underline" },
+                  }}
+                  onClick={() => navigate("/forgot")}
+                >
+                  Forgot Password
+                </Typography>
+
 
                 <motion.div
                   whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
