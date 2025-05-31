@@ -312,7 +312,7 @@ const AuthPage = ({ fetchUserProfile }) => {
                   }}
                 />
 
-                <Typography
+                {isLogin &&(<Typography
                   variant="body2"
                   sx={{
                     mt: 2,
@@ -325,7 +325,7 @@ const AuthPage = ({ fetchUserProfile }) => {
                   onClick={() => navigate("/forgot")}
                 >
                   Forgot Password
-                </Typography>
+                </Typography>)}
 
 
                 <motion.div
