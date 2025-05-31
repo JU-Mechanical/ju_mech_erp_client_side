@@ -23,6 +23,8 @@ import { use, useEffect } from "react";
 import { setLogout } from "./state";
 import { setLogin } from "./state";
 import PromptForKey from "./components/PromptKey";
+import ResetPassword from "./pages/ResetPassword";
+import ResetNewPassword from "./pages/NewPassword";
 
 //* Create a Custom Theme
 const theme = createTheme({
@@ -135,6 +137,8 @@ function App() {
             path="/dashboard"
             element={user ? <DashboardPage /> : <AuthPage />}
           />
+            <Route path="/forgot" element={<ResetPassword />} />
+            <Route path="/reset-password/:token" element={<ResetNewPassword/>}/>
           <Route path="/admin" element={<PrivateRoute><AdminPortal /></PrivateRoute>} />
           <Route path="/notices" element={<NoticePage />} />
           <Route path="/faculty" element={<FacultyPage />} />
