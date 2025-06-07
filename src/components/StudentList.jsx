@@ -9,6 +9,7 @@ import {
   InputAdornment,
   Box,
   Skeleton,
+  LinearProgress,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import StudentProfile from "./StudentProfile";
@@ -40,6 +41,7 @@ const UserList = () => {
       const data = await res.json();
 
       if (data.users && Array.isArray(data.users)) {
+
         setUsers(data.users);
         setTotalPages(data.totalPages || 1);
         setCurrentPage(data.currentPage || 1);
@@ -80,7 +82,13 @@ const UserList = () => {
           page++;
         }
       }
-      setAllUsers(all);
+
+      const updatedUsers = all.map((user) => ({
+        ...user,
+        percentageFilled: getPercentageFilled(user),
+      }));
+      console.log("All Users:", updatedUsers);
+      setAllUsers(updatedUsers);
 
       // Count users with no data (all fields empty or null except _id)
       const noDataCount = all.filter((u) => {
@@ -98,7 +106,60 @@ const UserList = () => {
       setAllUsers([]);
       setTotalCount(0);
     }
+  }
+ const getPercentageFilled = (user) => {
+  const skipTopLevel = ["_id", "name", "email", "mobileNo", "password", "resetPasswordToken", "resetPasswordExpires", "createdAt", "updatedAt", "__v"];
+  const requiredTopLevelSections = [
+    "personalInfo",
+    "enrollmentDetails",
+    "academicBackground",
+    "academicInfo",
+    "curricularInfo",
+    "careerProgression",
+    "miscellaneous",
+  ];
+
+  let filled = 0;
+  let total = 0;
+
+  const isFilledValue = (v) => {
+    if (typeof v === "string") return v.trim() !== "";
+    if (typeof v === "number" || typeof v === "boolean") return true;
+    if (Array.isArray(v)) return v.length > 0 && v.some(isFilledValue);
+    if (typeof v === "object" && v !== null) return Object.values(v).some(isFilledValue);
+    return false;
   };
+
+  const countFilled = (val) => {
+    if (Array.isArray(val)) {
+      for (const item of val) countFilled(item);
+    } else if (typeof val === "object" && val !== null) {
+      for (const key in val) {
+        countFilled(val[key]);
+      }
+    } else {
+      total++;
+      if (isFilledValue(val)) filled++;
+    }
+  };
+
+  // Loop through only required sections
+  for (const section of requiredTopLevelSections) {
+    const sectionData = user[section];
+
+    if (sectionData === undefined || sectionData === null) {
+      // If entire section is missing, count as unfilled
+      total++;
+    } else {
+      countFilled(sectionData);
+    }
+  }
+
+  return total === 0 ? 0 : Math.round((filled / total) * 100);
+};
+
+
+
 
   useEffect(() => {
     fetchUsers(currentPage);
@@ -108,11 +169,11 @@ const UserList = () => {
   const filteredUsers =
     searchTerm.trim() !== ""
       ? allUsers.filter((user) =>
-          `${user.name || ""} ${user.rollNumber || ""}`
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-        )
-      : users;
+        `${user.name || ""} ${user.rollNumber || ""}`
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      )
+      : allUsers;
 
   if (loading) {
     return (
@@ -226,10 +287,39 @@ const UserList = () => {
                   onClick={() => setSelectedStudent(user)}
                   sx={{ cursor: "pointer" }}
                 >
-                  <ListItemText
-                    primary={user.name || "No name"}
-                    secondary={`Roll No: ${user.rollNumber || "N/A"}`}
-                  />
+                  <Box
+                    sx={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      flexDirection: "row",
+                    }}>
+                    <ListItemText
+                      primary={user.name || "No name"}
+                      secondary={`Roll No: ${user.rollNumber || "N/A"}`}
+
+                    />
+                    {user.academicBackground?(<Box sx={{ width: 100, textAlign: "right" }}>
+                      <Typography variant="caption" color="textSecondary" sx={{ mb: 0.5 }}>
+                        {user.percentageFilled === 100 ? "Completed" : `Filled: ${user.percentageFilled}%`}
+                      </Typography>
+                      <LinearProgress
+                        variant="determinate"
+                        value={user.percentageFilled}
+                        sx={{
+                          height: 6,
+                          borderRadius: 5,
+                          backgroundColor: "#eee",
+                          "& .MuiLinearProgress-bar": {
+                            backgroundColor: user.percentageFilled === 100 ? "green" : "#8e0038",
+                          },
+                        }}
+                      />
+                    </Box>):(<><Typography variant="caption" color="textSecondary" sx={{ mb: 0.5 }}>
+                        Only Login
+                      </Typography></>)}
+                  </Box>
                 </ListItem>
               ))
             ) : (
