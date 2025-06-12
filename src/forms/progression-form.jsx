@@ -182,8 +182,10 @@ export default function ProgressionForm({ formData, handleChange }) {
       if (file && file.size <= 2 * 1024 * 1024) {
         // Check file size (2 MB limit)
         uploadFileToCloudinary(file).then((url) => {
-          const updatedData = [...formData[section]];
-          updatedData[index][field] = url;
+           const updatedData = [...formData[section]];
+        const updatedItem = { ...updatedData[index] }; // clone the object
+        updatedItem[field] = url;
+        updatedData[index] = updatedItem; // assign the cloned+updated item back
           handleChange({ target: { name: section, value: updatedData } });
         });
       } else {
